@@ -176,6 +176,86 @@
     .fest-visit { font-size: 10px; font-weight: 700; color: #2B5BA8; text-transform: uppercase; letter-spacing: 0.08em; text-decoration: none; }
     .fest-visit.placeholder { color: #ccc; cursor: default; }
 
+    /* ── SLIDE 4: QUIZ ─────────────────────────────────────────────── */
+    .slide-quiz { background: #F5F0E8; flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+    .q-stage { flex: 1; overflow-y: auto; padding: 0; position: relative; }
+    .q-stage::-webkit-scrollbar { width: 4px; }
+    .q-stage::-webkit-scrollbar-track { background: #e8e3db; }
+    .q-stage::-webkit-scrollbar-thumb { background: #2B5BA8; border-radius: 2px; }
+    .q-screen { display: none; }
+    .q-screen.active { display: block; }
+
+    /* Intro / opt-out */
+    #q-intro.active { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; min-height: 100%; padding: 28px 40px; }
+    .q-intro-eyebrow { font-size: 11px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: #2B5BA8; background: #F2B02E; padding: 5px 14px; display: inline-block; margin-bottom: 16px; }
+    .q-intro-title { font-family: 'Bebas Neue', sans-serif; font-size: 48px; line-height: 0.95; color: #1A1A1A; margin-bottom: 10px; }
+    .q-intro-text { font-size: 13px; color: #3A3530; line-height: 1.6; max-width: 440px; margin: 0 auto 18px; }
+    .q-how { background: #1A1A1A; transform: skewX(-8deg); padding: 14px 26px; margin: 0 auto 22px; max-width: 420px; }
+    .q-how-inner { transform: skewX(8deg); text-align: left; }
+    .q-how-label { font-size: 9px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: #F2B02E; margin-bottom: 7px; }
+    .q-how-step { display: flex; align-items: baseline; gap: 8px; font-size: 11px; color: #e0ddd8; line-height: 1.5; margin-bottom: 4px; }
+    .q-how-num { font-family: 'Bebas Neue', sans-serif; font-size: 13px; color: #E8403A; flex-shrink: 0; width: 14px; }
+    .q-intro-btns { display: flex; gap: 12px; align-items: center; }
+    .q-btn-primary { background: #E8403A; color: #F5F0E8; font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 0.08em; padding: 12px 30px; border: none; cursor: pointer; transition: background 0.15s; }
+    .q-btn-primary:hover { background: #C42E28; }
+    .q-btn-ghost { background: transparent; color: #2B5BA8; font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: 0.06em; padding: 11px 22px; border: 2px solid #2B5BA8; cursor: pointer; transition: background 0.15s, color 0.15s; }
+    .q-btn-ghost:hover { background: #2B5BA8; color: #F5F0E8; }
+
+    /* Play */
+    #q-play { padding: 16px 20px 20px; }
+    .q-status { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+    .q-progress-text { font-size: 10px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #888; }
+    .q-progress-dots { display: flex; gap: 5px; }
+    .q-pdot { width: 9px; height: 9px; border-radius: 50%; background: #d8d2c8; transition: background 0.2s; }
+    .q-pdot.right { background: #5cb85c; }
+    .q-pdot.wrong { background: #E8403A; }
+    .q-pdot.current { background: #1A1A1A; box-shadow: 0 0 0 2px #F2B02E; }
+    .q-score-pill { font-size: 11px; font-weight: 700; color: #1A1A1A; background: #F2B02E; padding: 3px 11px; border-radius: 2px; letter-spacing: 0.04em; }
+
+    .q-card { background: #1A1A1A; padding: 18px 20px; margin-bottom: 18px; position: relative; overflow: hidden; }
+    .q-card::before { content: ''; position: absolute; top: 0; left: 0; bottom: 0; width: 5px; background: #F2B02E; }
+    .q-card-label { font-size: 9px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: #888; margin-bottom: 8px; }
+    .q-event-name { font-family: 'Bebas Neue', sans-serif; font-size: 26px; line-height: 1.05; color: #F5F0E8; margin-bottom: 4px; }
+    .q-prompt { font-size: 12px; color: #bbb; line-height: 1.5; margin-bottom: 16px; }
+    .q-prompt b { color: #F2B02E; font-weight: 600; }
+    .q-answer-btns { display: flex; gap: 12px; }
+    .q-ans { flex: 1; font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 0.06em; padding: 12px; border: none; cursor: pointer; color: #fff; transition: transform 0.1s, filter 0.15s; }
+    .q-ans:hover { filter: brightness(1.12); }
+    .q-ans:active { transform: translateY(1px); }
+    .q-ans.before { background: #E8403A; }
+    .q-ans.after { background: #2B5BA8; }
+    .q-ans:disabled { cursor: default; opacity: 0.45; filter: none; }
+    .q-feedback { margin-top: 14px; padding: 10px 14px; font-size: 12px; line-height: 1.5; border-radius: 3px; display: none; }
+    .q-feedback.show { display: block; }
+    .q-feedback.correct { background: rgba(92,184,92,0.15); border-left: 3px solid #5cb85c; color: #cdebcd; }
+    .q-feedback.incorrect { background: rgba(232,64,58,0.15); border-left: 3px solid #E8403A; color: #f3c9c7; }
+    .q-feedback b { color: #fff; }
+
+    .q-tl-title { font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: #888; margin-bottom: 8px; }
+    .q-timeline { display: flex; flex-direction: column; gap: 0; }
+    .q-tl-item { display: flex; align-items: center; gap: 12px; padding: 7px 12px; background: #fff; border-left: 4px solid #2B5BA8; box-shadow: 1px 1px 0 rgba(0,0,0,0.06); margin-bottom: 5px; transition: background 0.3s, transform 0.2s; }
+    .q-tl-item.anchor { border-left-color: #888; background: #efe9df; }
+    .q-tl-item.just-placed { background: #F2B02E; border-left-color: #E8403A; transform: translateX(3px); }
+    .q-tl-year { font-family: 'Bebas Neue', sans-serif; font-size: 17px; color: #1A1A1A; width: 42px; flex-shrink: 0; letter-spacing: 0.02em; }
+    .q-tl-name { font-size: 11.5px; color: #3A3530; line-height: 1.3; flex: 1; }
+    .q-tl-badge { font-size: 8px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #888; background: #fff; padding: 2px 6px; border-radius: 2px; flex-shrink: 0; }
+
+    /* Results */
+    #q-results { padding: 24px 28px; }
+    .q-results-head { text-align: center; margin-bottom: 20px; }
+    .q-score-big { font-family: 'Bebas Neue', sans-serif; font-size: 72px; line-height: 0.9; color: #E8403A; }
+    .q-score-sub { font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: #888; margin-bottom: 6px; }
+    .q-score-blurb { font-size: 12.5px; color: #3A3530; line-height: 1.5; max-width: 380px; margin: 8px auto 0; }
+    .q-results-list { display: flex; flex-direction: column; gap: 6px; margin: 18px 0 22px; }
+    .q-res-item { display: flex; align-items: center; gap: 11px; padding: 8px 12px; background: #fff; box-shadow: 1px 1px 0 rgba(0,0,0,0.06); border-left: 4px solid #5cb85c; }
+    .q-res-item.miss { border-left-color: #E8403A; }
+    .q-res-mark { font-size: 14px; flex-shrink: 0; width: 16px; text-align: center; }
+    .q-res-item .q-res-mark { color: #5cb85c; }
+    .q-res-item.miss .q-res-mark { color: #E8403A; }
+    .q-res-year { font-family: 'Bebas Neue', sans-serif; font-size: 16px; color: #1A1A1A; width: 42px; flex-shrink: 0; }
+    .q-res-name { font-size: 11.5px; color: #3A3530; line-height: 1.3; flex: 1; }
+    .q-results-btns { display: flex; gap: 12px; justify-content: center; }
+
     /* ── PLACEHOLDER ───────────────────────────────────────────────── */
     .slide-placeholder { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #1e1e1e; gap: 12px; }
     .ph-title { font-size: 18px; font-weight: 500; color: #888; font-family: 'Bebas Neue', sans-serif; letter-spacing: 0.05em; }
@@ -311,11 +391,65 @@
         </div>
       </div>
 
-      <!-- ── SLIDE 4: QUIZ PLACEHOLDER ────────────────────────────── -->
+      <!-- ── SLIDE 4: QUIZ ────────────────────────────────────────── -->
       <div class="sl-slide" id="slide-4">
-        <div class="slide-placeholder">
-          <div class="ph-title">Test Your Jazz IQ</div>
-          <div class="ph-sub">Interactive quiz — to be built in Claude Code</div>
+        <div class="slide-quiz">
+          <div class="slide-header"><span class="slide-header-title">Test Your Jazz IQ</span><span class="slide-header-sub">Which came first?</span></div>
+          <div class="q-stage">
+
+            <!-- INTRO / OPT-OUT -->
+            <div class="q-screen active" id="q-intro">
+              <span class="q-intro-eyebrow">Optional — just for fun</span>
+              <div class="q-intro-title">Which Came First?</div>
+              <p class="q-intro-text">We'll show you moments from Chicago's jazz history one at a time. Your job: decide whether each one happened <b>before</b> or <b>after</b> an event already on the timeline. Watch the story build as you go.</p>
+              <div class="q-how"><div class="q-how-inner">
+                <div class="q-how-label">How it works</div>
+                <div class="q-how-step"><span class="q-how-num">1</span><span>Three anchor events start on your timeline.</span></div>
+                <div class="q-how-step"><span class="q-how-num">2</span><span>A new event appears — is it before or after its nearest neighbor?</span></div>
+                <div class="q-how-step"><span class="q-how-num">3</span><span>Either way, it lands in the right spot. Eight rounds, low stakes.</span></div>
+              </div></div>
+              <div class="q-intro-btns">
+                <button class="q-btn-primary" onclick="startQuiz()">Take the quiz</button>
+                <button class="q-btn-ghost" onclick="goToSlide(5)">Skip to Calendar →</button>
+              </div>
+            </div>
+
+            <!-- PLAY -->
+            <div class="q-screen" id="q-play">
+              <div class="q-status">
+                <div class="q-progress-text">Round <span id="q-round-num">1</span> of <span id="q-round-total">8</span></div>
+                <div class="q-progress-dots" id="q-dots"></div>
+                <div class="q-score-pill"><span id="q-score-live">0</span> correct</div>
+              </div>
+              <div class="q-card">
+                <div class="q-card-label">Where does this belong?</div>
+                <div class="q-event-name" id="q-event-name">—</div>
+                <div class="q-prompt" id="q-prompt">—</div>
+                <div class="q-answer-btns">
+                  <button class="q-ans before" id="q-btn-before" onclick="answerQuiz('before')">◀ Before</button>
+                  <button class="q-ans after" id="q-btn-after" onclick="answerQuiz('after')">After ▶</button>
+                </div>
+                <div class="q-feedback" id="q-feedback"></div>
+              </div>
+              <div class="q-tl-title">Your timeline</div>
+              <div class="q-timeline" id="q-timeline"></div>
+            </div>
+
+            <!-- RESULTS -->
+            <div class="q-screen" id="q-results">
+              <div class="q-results-head">
+                <div class="q-score-sub">Your Jazz IQ</div>
+                <div class="q-score-big"><span id="q-final-score">0</span> / <span id="q-final-total">8</span></div>
+                <p class="q-score-blurb" id="q-score-blurb">—</p>
+              </div>
+              <div class="q-results-list" id="q-results-list"></div>
+              <div class="q-results-btns">
+                <button class="q-btn-ghost" onclick="startQuiz()">↻ Play again</button>
+                <button class="q-btn-primary" onclick="goToSlide(5)">Continue →</button>
+              </div>
+            </div>
+
+          </div>
         </div>
       </div>
 
@@ -450,6 +584,36 @@
     { name:'Jazz Institute of Chicago', when:'Year-Round', accentColor:'#1A1A1A', whenColor:'#888', text:'Beyond the festivals, the Jazz Institute presents events, educational programs, and community initiatives throughout the year. Their website is the essential resource for knowing what\'s happening in Chicago jazz.', url:null },
   ];
 
+  // ── QUIZ DATA ──────────────────────────────────────────────────────
+  // Three fixed reference points, always pre-placed on the timeline.
+  const QUIZ_ANCHORS = [
+    { year: 1910, name: 'The Great Migration begins' },
+    { year: 1965, name: 'AACM founded on the South Side' },
+    { year: 1979, name: 'First Chicago Jazz Festival in Grant Park' },
+  ];
+
+  // Draw bank — events the learner places. Only confirmed dates included for now.
+  const QUIZ_EVENTS = [
+    { year: 1907, name: 'Green Mill Cocktail Lounge opens in Uptown' },
+    { year: 1921, name: 'The Sunset Cafe opens on The Stroll' },
+    { year: 1922, name: 'Louis Armstrong arrives in Chicago' },
+    { year: 1928, name: 'Louis Armstrong records "West End Blues"' },
+    { year: 1935, name: 'DuSable High School opens' },
+    { year: 1943, name: 'Dinah Washington joins Lionel Hampton\'s band' },
+    { year: 1946, name: 'Sun Ra settles in Chicago' },
+    { year: 1947, name: 'Joe Segal founds the Jazz Showcase' },
+    { year: 1959, name: 'Johnny Griffin records "The Little Giant"' },
+    { year: 1961, name: 'Eddie Harris records "Exodus"' },
+    { year: 1961, name: 'Sun Ra leaves Chicago for New York' },
+    { year: 1969, name: 'The Art Ensemble of Chicago forms' },
+    { year: 1969, name: 'The Jazz Institute of Chicago is founded' },
+    { year: 2015, name: 'Makaya McCraven releases "In the Moment"' },
+  ];
+  const QUIZ_ROUNDS = 8;
+
+  // ── QUIZ STATE ─────────────────────────────────────────────────────
+  let quiz = null;
+
   // ── AVATAR ─────────────────────────────────────────────────────────
   const SHAPES = ['circle','rect','diamond','triangle'];
   function makeAvatar(initials, bgColor, idx) {
@@ -553,6 +717,145 @@
     scroll.scrollTop = 0;
   }
 
+  // ── QUIZ ENGINE ────────────────────────────────────────────────────
+  function showQuizScreen(id) {
+    document.querySelectorAll('#slide-4 .q-screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    document.querySelector('#slide-4 .q-stage').scrollTop = 0;
+  }
+
+  function shuffle(arr) {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  function startQuiz() {
+    quiz = {
+      placed: QUIZ_ANCHORS.map(e => ({ ...e, anchor: true })).sort((a, b) => a.year - b.year),
+      queue: shuffle(QUIZ_EVENTS).slice(0, QUIZ_ROUNDS),
+      qIndex: 0,
+      score: 0,
+      locked: false,
+      results: [],
+    };
+    renderQuizDots();
+    document.getElementById('q-round-total').textContent = QUIZ_ROUNDS;
+    document.getElementById('q-score-live').textContent = '0';
+    showQuizScreen('q-play');
+    renderQuizTimeline(null);
+    nextQuizQuestion();
+  }
+
+  function renderQuizDots() {
+    document.getElementById('q-dots').innerHTML =
+      quiz.queue.map((_, i) => `<div class="q-pdot" id="q-pdot-${i}"></div>`).join('');
+  }
+
+  // Nearest already-placed event by absolute year distance.
+  function nearestPlaced(year) {
+    return quiz.placed.reduce((best, p) =>
+      Math.abs(p.year - year) < Math.abs(best.year - year) ? p : best
+    );
+  }
+
+  function nextQuizQuestion() {
+    if (quiz.qIndex >= quiz.queue.length) { showQuizResults(); return; }
+    const ev = quiz.queue[quiz.qIndex];
+    const neighbor = nearestPlaced(ev.year);
+    quiz.current = ev;
+    quiz.neighbor = neighbor;
+    quiz.locked = false;
+
+    document.getElementById('q-round-num').textContent = quiz.qIndex + 1;
+    document.getElementById('q-event-name').textContent = ev.name;
+    document.getElementById('q-prompt').innerHTML =
+      `Did this happen <b>before</b> or <b>after</b> ${neighbor.name} (${neighbor.year})?`;
+
+    const fb = document.getElementById('q-feedback');
+    fb.className = 'q-feedback';
+    fb.innerHTML = '';
+    document.getElementById('q-btn-before').disabled = false;
+    document.getElementById('q-btn-after').disabled = false;
+
+    quiz.queue.forEach((_, i) => {
+      const dot = document.getElementById('q-pdot-' + i);
+      dot.classList.toggle('current', i === quiz.qIndex);
+    });
+  }
+
+  function answerQuiz(choice) {
+    if (quiz.locked) return;
+    quiz.locked = true;
+    const ev = quiz.current, neighbor = quiz.neighbor;
+    // Same-year ties are unfair to grade, so accept either answer.
+    const tie = ev.year === neighbor.year;
+    const correctAnswer = ev.year < neighbor.year ? 'before' : 'after';
+    const correct = tie || choice === correctAnswer;
+    if (correct) {
+      quiz.score++;
+      document.getElementById('q-score-live').textContent = quiz.score;
+    }
+    quiz.results.push({ year: ev.year, name: ev.name, correct });
+
+    document.getElementById('q-btn-before').disabled = true;
+    document.getElementById('q-btn-after').disabled = true;
+
+    const dot = document.getElementById('q-pdot-' + quiz.qIndex);
+    dot.classList.remove('current');
+    dot.classList.add(correct ? 'right' : 'wrong');
+
+    const fb = document.getElementById('q-feedback');
+    fb.className = 'q-feedback show ' + (correct ? 'correct' : 'incorrect');
+    fb.innerHTML = correct
+      ? `✓ <b>Correct!</b> ${ev.name.replace(/<[^>]*>/g, '')} — <b>${ev.year}</b>.`
+      : `✗ <b>Not quite.</b> This happened in <b>${ev.year}</b>${tie ? '' : (correctAnswer === 'before' ? ', before' : ', after') + ` ${neighbor.year}`}.`;
+
+    // Place the event correctly regardless of the answer.
+    quiz.placed.push({ year: ev.year, name: ev.name });
+    quiz.placed.sort((a, b) => a.year - b.year);
+    renderQuizTimeline(ev);
+
+    quiz.qIndex++;
+    setTimeout(nextQuizQuestion, 1700);
+  }
+
+  function renderQuizTimeline(justPlaced) {
+    document.getElementById('q-timeline').innerHTML = quiz.placed.map(p => {
+      const isNew = justPlaced && p.year === justPlaced.year && p.name === justPlaced.name;
+      const cls = 'q-tl-item' + (p.anchor ? ' anchor' : '') + (isNew ? ' just-placed' : '');
+      const badge = p.anchor ? '<span class="q-tl-badge">Anchor</span>' : '';
+      return `<div class="${cls}"><span class="q-tl-year">${p.year}</span><span class="q-tl-name">${p.name}</span>${badge}</div>`;
+    }).join('');
+  }
+
+  function showQuizResults() {
+    document.getElementById('q-final-score').textContent = quiz.score;
+    document.getElementById('q-final-total').textContent = quiz.queue.length;
+    const pct = quiz.score / quiz.queue.length;
+    let blurb;
+    if (pct === 1) blurb = 'A perfect run — you know your Chicago jazz history cold.';
+    else if (pct >= 0.625) blurb = 'Strong work. You\'ve got a real feel for how this story unfolded.';
+    else if (pct >= 0.375) blurb = 'Not bad! The timeline\'s tricky — every era blurs into the next.';
+    else blurb = 'No worries — now you\'ve seen how it all fits together. Take another pass anytime.';
+    document.getElementById('q-score-blurb').textContent = blurb;
+
+    document.getElementById('q-results-list').innerHTML = quiz.results
+      .slice()
+      .sort((a, b) => a.year - b.year)
+      .map(r => `
+        <div class="q-res-item${r.correct ? '' : ' miss'}">
+          <span class="q-res-mark">${r.correct ? '✓' : '✗'}</span>
+          <span class="q-res-year">${r.year}</span>
+          <span class="q-res-name">${r.name}</span>
+        </div>`).join('');
+
+    showQuizScreen('q-results');
+  }
+
   // ── NAVIGATION ─────────────────────────────────────────────────────
   function toggleSidebar() {
     sidebarOpen = !sidebarOpen;
@@ -562,7 +865,9 @@
   function goToSlide(n) {
     if (n < 0 || n >= TOTAL) return;
     const target = document.getElementById('menu-' + n);
-    if (target && target.classList.contains('locked')) return;
+    // Locked slides can't be reached by jumping ahead via the menu, but the
+    // learner can always step forward one slide (which unlocks it on arrival).
+    if (target && target.classList.contains('locked') && n !== current + 1) return;
 
     document.getElementById('slide-' + current).classList.remove('active');
     const prevMenu = document.getElementById('menu-' + current);
@@ -574,6 +879,9 @@
     document.getElementById('slide-' + current).classList.add('active');
     const curMenu = document.getElementById('menu-' + current);
     if (curMenu) { curMenu.classList.add('active'); curMenu.classList.remove('locked'); }
+
+    // Entering the quiz slide always starts at its intro screen.
+    if (current === 4) showQuizScreen('q-intro');
 
     if (current + 1 < TOTAL) {
       const next = document.getElementById('menu-' + (current + 1));
