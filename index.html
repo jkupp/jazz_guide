@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>A Jazz Lover's Guide to Chicago</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #111; display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; font-family: 'Inter', sans-serif; }
+
+    /* ── SHELL ─────────────────────────────────────────────────────── */
+    .sl-outer { background: #1a1a1a; width: 100%; max-width: 1100px; height: 620px; display: flex; flex-direction: column; font-family: 'Inter', sans-serif; border-radius: 8px; overflow: hidden; box-shadow: 0 8px 40px rgba(0,0,0,0.6); }
+
+    .sl-topbar { background: #222; height: 44px; display: flex; align-items: center; padding: 0 16px; gap: 16px; border-bottom: 1px solid #383838; flex-shrink: 0; }
+    .sl-hamburger { cursor: pointer; display: flex; flex-direction: column; gap: 4px; padding: 4px; background: none; border: none; }
+    .sl-hamburger span { display: block; width: 20px; height: 2px; background: #bbb; border-radius: 1px; transition: background 0.15s; }
+    .sl-hamburger:hover span { background: #fff; }
+    .sl-course-title { font-size: 13px; color: #ccc; font-weight: 400; letter-spacing: 0.02em; }
+
+    .sl-middle { display: flex; flex: 1; overflow: hidden; }
+
+    /* ── SIDEBAR ───────────────────────────────────────────────────── */
+    .sl-sidebar { width: 240px; background: #2a2a2a; border-right: 1px solid #383838; flex-shrink: 0; overflow-y: auto; transition: width 0.25s ease, opacity 0.25s ease; }
+    .sl-sidebar.collapsed { width: 0; opacity: 0; overflow: hidden; }
+    .sl-sidebar-header { padding: 14px 16px 10px; font-size: 11px; font-weight: 600; color: #777; letter-spacing: 0.12em; text-transform: uppercase; border-bottom: 1px solid #383838; }
+    .sl-menu-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; font-size: 12px; color: #bbb; cursor: pointer; border-left: 3px solid transparent; line-height: 1.3; transition: background 0.12s, color 0.12s; }
+    .sl-menu-item:hover { background: #333; color: #fff; }
+    .sl-menu-item.active { background: #333; color: #fff; border-left-color: #E8403A; }
+    .sl-menu-item.completed .sl-item-icon { color: #5cb85c; }
+    .sl-menu-item.locked { color: #555; cursor: default; }
+    .sl-menu-item.locked:hover { background: transparent; color: #555; }
+    .sl-item-icon { font-size: 13px; flex-shrink: 0; margin-left: 8px; color: #777; }
+
+    /* ── CONTENT ───────────────────────────────────────────────────── */
+    .sl-content { flex: 1; overflow: hidden; position: relative; }
+    .sl-slide { position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: none; }
+    .sl-slide.active { display: flex; flex-direction: column; }
+
+    /* ── BOTTOM BAR ────────────────────────────────────────────────── */
+    .sl-bottombar { background: #2a2a2a; height: 50px; display: flex; align-items: center; padding: 0 16px; gap: 8px; border-top: 2px solid #555; flex-shrink: 0; }
+    .bar-media { display: flex; align-items: center; gap: 8px; flex: 1; }
+    .bar-media.hidden { display: none; }
+    .bar-nav { display: flex; align-items: center; gap: 8px; margin-left: auto; }
+    .bar-btn { background: #555; border: 2px solid #ccc; border-radius: 4px; cursor: pointer; color: #fff; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 6px 12px; font-family: 'Inter', sans-serif; transition: background 0.12s, border-color 0.12s; }
+    .bar-btn:hover { background: #666; border-color: #fff; }
+    .bar-btn:disabled { opacity: 0.4; cursor: default; }
+    .bar-btn.round { border-radius: 50%; width: 32px; height: 32px; padding: 0; display: flex; align-items: center; justify-content: center; font-size: 12px; padding-left: 2px; }
+    .bar-counter { background: #555; border: 2px solid #ccc; border-radius: 4px; color: #fff; font-size: 12px; font-weight: 600; padding: 4px 10px; font-family: 'Inter', sans-serif; }
+    .bar-divider { width: 1px; height: 22px; background: #666; flex-shrink: 0; margin: 0 4px; }
+    .bar-progress { flex: 1; height: 5px; background: #555; border-radius: 3px; min-width: 40px; }
+    .bar-progress-fill { height: 100%; background: #2B9FE8; border-radius: 3px; width: 0%; transition: width 0.3s; }
+
+    /* ── SLIDE 0: WELCOME ──────────────────────────────────────────── */
+    .slide-welcome { background: #F5F0E8; flex: 1; position: relative; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 28px 48px; }
+    .shape-tl { position: absolute; top: -30px; left: -30px; width: 150px; height: 150px; background: #E8403A; border-radius: 50%; }
+    .shape-tr { position: absolute; top: 0; right: 0; width: 100px; height: 100px; background: #F2B02E; }
+    .shape-br { position: absolute; bottom: -20px; right: 50px; width: 120px; height: 120px; background: #2B5BA8; border-radius: 50%; }
+    .shape-bl { position: absolute; bottom: 20px; left: 0; width: 70px; height: 160px; background: #2B5BA8; }
+    .shape-rect { position: absolute; top: 50px; left: 110px; width: 80px; height: 24px; background: #F2B02E; }
+    .note-l { position: absolute; left: 28px; top: 44%; font-size: 48px; opacity: 0.12; color: #1A1A1A; font-family: serif; z-index: 1; }
+    .note-r { position: absolute; right: 28px; bottom: 26%; font-size: 36px; opacity: 0.12; color: #1A1A1A; font-family: serif; z-index: 1; }
+    .eyebrow { font-size: 11px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: #2B5BA8; background: #F2B02E; padding: 5px 14px; margin-bottom: 14px; display: inline-block; position: relative; z-index: 2; }
+    .w-title-lg { font-family: 'Bebas Neue', sans-serif; font-size: 62px; line-height: 0.95; color: #1A1A1A; position: relative; z-index: 2; }
+    .w-title-sm { font-family: 'Bebas Neue', sans-serif; font-size: 30px; color: #1A1A1A; margin: 2px 0; position: relative; z-index: 2; }
+    .w-title-city { font-family: 'Bebas Neue', sans-serif; font-size: 62px; line-height: 0.95; color: #2B5BA8; margin: 0 0 12px; position: relative; z-index: 2; }
+    .w-divider { width: 50px; height: 4px; background: #E8403A; margin: 0 auto 14px; position: relative; z-index: 2; }
+    .w-intro { font-size: 13px; color: #3A3530; line-height: 1.6; max-width: 420px; margin: 0 auto 18px; position: relative; z-index: 2; }
+    .para-wrap { position: relative; z-index: 2; margin: 0 auto 20px; width: 360px; }
+    .para-shape { background: #1A1A1A; transform: skewX(-8deg); padding: 14px 28px; }
+    .para-inner { transform: skewX(8deg); }
+    .para-label { font-size: 9px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: #888; margin-bottom: 8px; }
+    .para-items { display: grid; grid-template-columns: 1fr 1fr; gap: 5px 16px; }
+    .para-item { display: flex; align-items: center; gap: 7px; }
+    .para-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .para-text { font-size: 11px; color: #e0ddd8; font-weight: 500; }
+    .cta-btn { background: #E8403A; color: #F5F0E8; font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 0.1em; padding: 12px 32px; border: none; cursor: pointer; position: relative; z-index: 2; transition: background 0.15s; }
+    .cta-btn:hover { background: #C42E28; }
+
+    /* ── SLIDE 1: TIMELINE ─────────────────────────────────────────── */
+    .slide-timeline { background: #F5F0E8; flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+    .slide-header { background: #1A1A1A; padding: 12px 20px; flex-shrink: 0; display: flex; align-items: baseline; gap: 14px; }
+    .slide-header-title { font-family: 'Bebas Neue', sans-serif; font-size: 26px; color: #F5F0E8; letter-spacing: 0.04em; }
+    .slide-header-sub { font-size: 10px; color: #777; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; }
+    .intro-band { background: #F2B02E; padding: 9px 20px; font-size: 11.5px; color: #1A1A1A; line-height: 1.5; font-style: italic; flex-shrink: 0; }
+    .tl-scroll { flex: 1; overflow-y: auto; padding: 20px 20px 20px 0; position: relative; }
+    .tl-scroll::-webkit-scrollbar { width: 4px; }
+    .tl-scroll::-webkit-scrollbar-track { background: #e8e3db; }
+    .tl-scroll::-webkit-scrollbar-thumb { background: #2B5BA8; border-radius: 2px; }
+    .tl-spine-wrap { position: relative; padding-left: 16px; }
+    .tl-spine { position: absolute; left: 75px; top: 8px; bottom: 8px; width: 3px; background: linear-gradient(to bottom,#E8403A,#F2B02E,#2B5BA8,#E8403A,#2B5BA8,#F2B02E,#555); }
+    .tl-entry { display: flex; align-items: flex-start; margin-bottom: 20px; cursor: pointer; position: relative; }
+    .tl-entry:last-child { margin-bottom: 0; }
+    .tl-year { width: 58px; flex-shrink: 0; text-align: right; padding-right: 10px; padding-top: 3px; }
+    .tl-year-text { font-family: 'Bebas Neue', sans-serif; font-size: 13px; line-height: 1.1; color: #1A1A1A; letter-spacing: 0.04em; display: block; }
+    .tl-dot-wrap { width: 20px; flex-shrink: 0; display: flex; flex-direction: column; align-items: center; padding-top: 5px; position: relative; z-index: 2; }
+    .tl-dot { width: 16px; height: 16px; border-radius: 50%; border: 3px solid #F5F0E8; flex-shrink: 0; transition: transform 0.2s; }
+    .tl-entry:hover .tl-dot { transform: scale(1.25); }
+    .tl-card { flex: 1; background: #fff; border-left: 5px solid #ccc; padding: 10px 14px; margin-left: 10px; box-shadow: 2px 2px 0 rgba(0,0,0,0.07); transition: transform 0.15s; overflow: hidden; max-height: 52px; }
+    .tl-card.expanded { max-height: 600px; }
+    .tl-entry:hover .tl-card { transform: translateX(3px); }
+    .tl-card-title { font-family: 'Bebas Neue', sans-serif; font-size: 17px; color: #1A1A1A; line-height: 1.15; }
+    .tl-card-body { font-size: 11.5px; color: #3A3530; line-height: 1.6; margin-top: 8px; padding-top: 8px; border-top: 1px solid #eee; }
+    .tl-toggle { font-size: 10px; font-weight: 600; color: #2B5BA8; text-transform: uppercase; letter-spacing: 0.08em; margin-top: 5px; display: inline-block; }
+    .tl-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px; }
+    .tl-tag { font-size: 9px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; padding: 2px 7px; border-radius: 2px; color: #fff; }
+
+    /* ── SLIDES 2 & 3: TABBED LAYOUT ───────────────────────────────── */
+    .slide-tabbed { background: #F5F0E8; flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+    .tab-bar { display: flex; background: #2a2a2a; flex-shrink: 0; border-bottom: 2px solid #383838; }
+    .tab-btn { font-family: 'Bebas Neue', sans-serif; font-size: 13px; letter-spacing: 0.08em; color: #888; padding: 10px 16px; cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -2px; transition: color 0.15s; white-space: nowrap; background: none; border-top: none; border-left: none; border-right: none; }
+    .tab-btn:hover { color: #ccc; }
+    .tab-btn.active { color: #F5F0E8; border-bottom-color: #E8403A; }
+    .tab-scroll { flex: 1; overflow-y: auto; padding: 16px 18px; }
+    .tab-scroll::-webkit-scrollbar { width: 4px; }
+    .tab-scroll::-webkit-scrollbar-track { background: #e8e3db; }
+    .tab-scroll::-webkit-scrollbar-thumb { background: #2B5BA8; border-radius: 2px; }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+    .tab-intro { font-size: 12px; color: #3A3530; line-height: 1.6; font-style: italic; margin-bottom: 14px; padding-bottom: 12px; border-bottom: 2px solid #e0dbd3; }
+
+    /* ── WHO'S WHO CARDS ───────────────────────────────────────────── */
+    .artist-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
+    .artist-card { background: #fff; box-shadow: 2px 2px 0 rgba(0,0,0,0.07); overflow: hidden; }
+    .artist-card-top { display: flex; }
+    .artist-avatar { width: 72px; height: 72px; flex-shrink: 0; }
+    .artist-card-info { flex: 1; padding: 9px 11px; border-top: 4px solid #ccc; }
+    .artist-name { font-family: 'Bebas Neue', sans-serif; font-size: 16px; color: #1A1A1A; line-height: 1.1; }
+    .artist-dates { font-size: 10px; color: #999; font-weight: 500; margin-bottom: 4px; }
+    .artist-preview { font-size: 11px; color: #3A3530; line-height: 1.5; }
+    .artist-card-body { padding: 0 11px; font-size: 11px; color: #3A3530; line-height: 1.6; max-height: 0; overflow: hidden; transition: max-height 0.3s ease, padding 0.3s; }
+    .artist-card-body.expanded { max-height: 200px; padding: 8px 11px 0; }
+    .artist-card-footer { display: flex; align-items: center; justify-content: space-between; padding: 7px 11px; border-top: 1px solid #f0ebe3; margin-top: 4px; }
+    .artist-listen { font-size: 10px; font-weight: 700; color: #E8403A; text-transform: uppercase; letter-spacing: 0.08em; text-decoration: none; cursor: pointer; }
+    .artist-listen.placeholder { color: #ccc; cursor: default; }
+    .artist-toggle { font-size: 10px; font-weight: 600; color: #2B5BA8; text-transform: uppercase; letter-spacing: 0.08em; cursor: pointer; }
+    .ww-spotlight { background: #1A1A1A; padding: 14px 16px; margin-bottom: 14px; transform: skewX(-2deg); }
+    .ww-spotlight-inner { transform: skewX(2deg); }
+    .ww-spotlight-label { font-size: 9px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: #F2B02E; margin-bottom: 6px; }
+    .ww-spotlight-title { font-family: 'Bebas Neue', sans-serif; font-size: 18px; color: #F5F0E8; margin-bottom: 6px; }
+    .ww-spotlight-text { font-size: 11.5px; color: #bbb; line-height: 1.6; }
+    .scene-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .scene-card { background: #1A1A1A; padding: 11px 13px; position: relative; overflow: hidden; }
+    .scene-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; }
+    .scene-card:nth-child(3n+1)::before { background: #E8403A; }
+    .scene-card:nth-child(3n+2)::before { background: #2B5BA8; }
+    .scene-card:nth-child(3n)::before { background: #F2B02E; }
+    .scene-name { font-family: 'Bebas Neue', sans-serif; font-size: 15px; color: #F5F0E8; line-height: 1.1; margin-bottom: 3px; }
+    .scene-role { font-size: 9px; font-weight: 600; color: #F2B02E; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 5px; }
+    .scene-text { font-size: 10.5px; color: #aaa; line-height: 1.5; margin-bottom: 7px; }
+    .scene-listen { font-size: 10px; font-weight: 700; color: #E8403A; text-transform: uppercase; letter-spacing: 0.08em; text-decoration: none; }
+    .scene-listen.placeholder { color: #444; cursor: default; }
+
+    /* ── WHERE TO HEAR CARDS ───────────────────────────────────────── */
+    .venue-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .venue-card { background: #fff; box-shadow: 2px 2px 0 rgba(0,0,0,0.07); overflow: hidden; }
+    .venue-card-top { border-top: 5px solid #ccc; padding: 12px 14px 0; }
+    .venue-name { font-family: 'Bebas Neue', sans-serif; font-size: 18px; color: #1A1A1A; line-height: 1.1; margin-bottom: 4px; }
+    .venue-tag { display: inline-block; font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 2px 8px; border-radius: 2px; color: #fff; margin-bottom: 7px; }
+    .venue-preview { font-size: 11px; color: #3A3530; line-height: 1.55; }
+    .venue-body { font-size: 11px; color: #3A3530; line-height: 1.6; max-height: 0; overflow: hidden; transition: max-height 0.3s ease, padding 0.3s; padding: 0 14px; }
+    .venue-body.expanded { max-height: 200px; padding: 8px 14px 0; }
+    .venue-footer { display: flex; align-items: center; justify-content: space-between; padding: 8px 14px; border-top: 1px solid #f0ebe3; margin-top: 8px; }
+    .venue-visit { font-size: 10px; font-weight: 700; color: #2B5BA8; text-transform: uppercase; letter-spacing: 0.08em; text-decoration: none; }
+    .venue-visit:hover { color: #1a3d70; }
+    .venue-visit.placeholder { color: #ccc; cursor: default; }
+    .venue-toggle { font-size: 10px; font-weight: 600; color: #E8403A; text-transform: uppercase; letter-spacing: 0.08em; cursor: pointer; }
+    .fest-list { display: flex; flex-direction: column; gap: 12px; }
+    .fest-card { background: #fff; box-shadow: 2px 2px 0 rgba(0,0,0,0.07); overflow: hidden; display: flex; }
+    .fest-accent { width: 8px; flex-shrink: 0; }
+    .fest-body { flex: 1; padding: 12px 14px; }
+    .fest-name { font-family: 'Bebas Neue', sans-serif; font-size: 20px; color: #1A1A1A; line-height: 1.1; margin-bottom: 3px; }
+    .fest-when { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 7px; }
+    .fest-text { font-size: 11.5px; color: #3A3530; line-height: 1.6; margin-bottom: 8px; }
+    .fest-visit { font-size: 10px; font-weight: 700; color: #2B5BA8; text-transform: uppercase; letter-spacing: 0.08em; text-decoration: none; }
+    .fest-visit.placeholder { color: #ccc; cursor: default; }
+
+    /* ── PLACEHOLDER ───────────────────────────────────────────────── */
+    .slide-placeholder { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #1e1e1e; gap: 12px; }
+    .ph-title { font-size: 18px; font-weight: 500; color: #888; font-family: 'Bebas Neue', sans-serif; letter-spacing: 0.05em; }
+    .ph-sub { font-size: 12px; color: #555; }
+  </style>
+</head>
+<body>
+
+<div class="sl-outer" role="application" aria-label="A Jazz Lover's Guide to Chicago">
+
+  <!-- TOP BAR -->
+  <div class="sl-topbar">
+    <button class="sl-hamburger" onclick="toggleSidebar()" aria-label="Toggle menu">
+      <span></span><span></span><span></span>
+    </button>
+    <span class="sl-course-title">A Jazz Lover's Guide to Chicago</span>
+  </div>
+
+  <div class="sl-middle">
+
+    <!-- SIDEBAR -->
+    <div class="sl-sidebar" id="sidebar">
+      <div class="sl-sidebar-header">Course Menu</div>
+      <div class="sl-menu-item active" onclick="goToSlide(0)" id="menu-0"><span>Welcome</span><span class="sl-item-icon" id="icon-0">●</span></div>
+      <div class="sl-menu-item locked" id="menu-1"><span>Chicago's Jazz Story</span><span class="sl-item-icon" id="icon-1">🔒</span></div>
+      <div class="sl-menu-item locked" id="menu-2"><span>Who's Who</span><span class="sl-item-icon" id="icon-2">🔒</span></div>
+      <div class="sl-menu-item locked" id="menu-3"><span>Where to Hear Jazz</span><span class="sl-item-icon" id="icon-3">🔒</span></div>
+      <div class="sl-menu-item locked" id="menu-4"><span>Test Your Jazz IQ</span><span class="sl-item-icon" id="icon-4">🔒</span></div>
+      <div class="sl-menu-item locked" id="menu-5"><span>Plan Your Jazz Calendar</span><span class="sl-item-icon" id="icon-5">🔒</span></div>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="sl-content">
+
+      <!-- ── SLIDE 0: WELCOME ──────────────────────────────────────── -->
+      <div class="sl-slide active" id="slide-0">
+        <div class="slide-welcome">
+          <div class="shape-tl"></div><div class="shape-tr"></div>
+          <div class="shape-br"></div><div class="shape-bl"></div>
+          <div class="shape-rect"></div>
+          <div class="note-l">&#9836;</div>
+          <div class="note-r">&#9834;</div>
+          <span class="eyebrow">A guide for jazz appreciators</span>
+          <div class="w-title-lg">A Jazz Lover's</div>
+          <div class="w-title-sm">Guide to</div>
+          <div class="w-title-city">Chicago</div>
+          <div class="w-divider"></div>
+          <p class="w-intro">From the South Side clubs that shaped a genre to the stages still swinging tonight — this is your insider's map to one of the world's great jazz cities.</p>
+          <div class="para-wrap">
+            <div class="para-shape"><div class="para-inner">
+              <div class="para-label">In this course</div>
+              <div class="para-items">
+                <div class="para-item"><div class="para-dot" style="background:#E8403A"></div><span class="para-text">Chicago's Jazz Story</span></div>
+                <div class="para-item"><div class="para-dot" style="background:#2B5BA8"></div><span class="para-text">Who's Who</span></div>
+                <div class="para-item"><div class="para-dot" style="background:#F2B02E"></div><span class="para-text">Where to Hear Jazz</span></div>
+                <div class="para-item"><div class="para-dot" style="background:#aaa"></div><span class="para-text">Your Jazz Chicago</span></div>
+              </div>
+            </div></div>
+          </div>
+          <button class="cta-btn" onclick="goToSlide(1)">Let's go &nbsp;→</button>
+        </div>
+      </div>
+
+      <!-- ── SLIDE 1: TIMELINE ─────────────────────────────────────── -->
+      <div class="sl-slide" id="slide-1">
+        <div class="slide-timeline">
+          <div class="slide-header">
+            <span class="slide-header-title">Chicago's Jazz Story</span>
+            <span class="slide-header-sub">Tap any era to expand</span>
+          </div>
+          <div class="intro-band">Chicago didn't just play jazz — it transformed it. From the clubs of the South Side to the avant-garde experiments of the AACM, the city has been reshaping the music for over a century.</div>
+          <div class="tl-scroll">
+            <div class="tl-spine-wrap">
+              <div class="tl-spine"></div>
+              <div class="tl-entry" onclick="toggleCard(this)"><div class="tl-year"><span class="tl-year-text">1900s<br>–1920s</span></div><div class="tl-dot-wrap"><div class="tl-dot" style="background:#E8403A"></div></div><div class="tl-card" style="border-left-color:#E8403A"><div class="tl-card-title">The Great Migration Changes Everything</div><div class="tl-card-body">Between 1910 and 1930, hundreds of thousands of Black Americans moved from the rural South to Chicago, bringing with them the blues, ragtime, and early jazz. The South Side became a hub of Black cultural life, and jazz found a new, electrified home in the city's dance halls and rent parties. Louis Armstrong arrived from New Orleans in 1922, and Chicago jazz was never the same.<div class="tl-tags"><span class="tl-tag" style="background:#E8403A">Great Migration</span><span class="tl-tag" style="background:#1A1A1A">Louis Armstrong</span><span class="tl-tag" style="background:#1A1A1A">South Side</span></div></div><span class="tl-toggle">Read more ↓</span></div></div>
+              <div class="tl-entry" onclick="toggleCard(this)"><div class="tl-year"><span class="tl-year-text">1920s<br>–1930s</span></div><div class="tl-dot-wrap"><div class="tl-dot" style="background:#F2B02E"></div></div><div class="tl-card" style="border-left-color:#F2B02E"><div class="tl-card-title">The Golden Age of the South Side Clubs</div><div class="tl-card-body">The Stroll — a stretch of South State Street — was the epicenter. The Sunset Cafe (later the Grand Terrace) hosted Louis Armstrong and Earl Hines in legendary residencies. The Savoy Ballroom drew thousands. These weren't just clubs; they were institutions that launched careers and defined a sound — hot, swinging, and completely Chicago.<div class="tl-tags"><span class="tl-tag" style="background:#F2B02E;color:#1A1A1A">Sunset Cafe</span><span class="tl-tag" style="background:#F2B02E;color:#1A1A1A">Grand Terrace</span><span class="tl-tag" style="background:#1A1A1A">Earl Hines</span><span class="tl-tag" style="background:#1A1A1A">The Stroll</span></div></div><span class="tl-toggle">Read more ↓</span></div></div>
+              <div class="tl-entry" onclick="toggleCard(this)"><div class="tl-year"><span class="tl-year-text">1930s<br>–1940s</span></div><div class="tl-dot-wrap"><div class="tl-dot" style="background:#2B5BA8"></div></div><div class="tl-card" style="border-left-color:#2B5BA8"><div class="tl-card-title">Jazz Moves North and Goes National</div><div class="tl-card-body">As the South Side clubs faced economic pressure from the Depression and changing city politics, jazz migrated to the Loop and North Side. The Blue Note and the Jazz Showcase (founded 1947) brought jazz to new audiences. Chicago became a recording hub, and artists like Nat King Cole — who got his start here — took the Chicago sound national.<div class="tl-tags"><span class="tl-tag" style="background:#2B5BA8">Jazz Showcase</span><span class="tl-tag" style="background:#2B5BA8">Blue Note</span><span class="tl-tag" style="background:#1A1A1A">Nat King Cole</span></div></div><span class="tl-toggle">Read more ↓</span></div></div>
+              <div class="tl-entry" onclick="toggleCard(this)"><div class="tl-year"><span class="tl-year-text">1950s</span></div><div class="tl-dot-wrap"><div class="tl-dot" style="background:#E8403A"></div></div><div class="tl-card" style="border-left-color:#E8403A"><div class="tl-card-title">Hard Bop, the Beehive, and Seeds of the Avant-Garde</div><div class="tl-card-body">The 1950s gave Chicago two distinct and equally vital jazz threads. At the Beehive Lounge in Hyde Park and the Blue Note in the Loop, a new generation of hard bop musicians pushed jazz harmonically and rhythmically — among them tenor saxophonists Johnny Griffin, Von Freeman, and Clifford Jordan, and the versatile Eddie Harris. Meanwhile, the visionary Sun Ra was quietly building his Arkestra on the South Side, developing the cosmic, boundary-dissolving music that would pave the way for the free jazz revolution of the following decade.<div class="tl-tags"><span class="tl-tag" style="background:#E8403A">Beehive Lounge</span><span class="tl-tag" style="background:#1A1A1A">Sun Ra</span><span class="tl-tag" style="background:#1A1A1A">Von Freeman</span><span class="tl-tag" style="background:#1A1A1A">Johnny Griffin</span></div></div><span class="tl-toggle">Read more ↓</span></div></div>
+              <div class="tl-entry" onclick="toggleCard(this)"><div class="tl-year"><span class="tl-year-text">1960s</span></div><div class="tl-dot-wrap"><div class="tl-dot" style="background:#2B5BA8"></div></div><div class="tl-card" style="border-left-color:#2B5BA8"><div class="tl-card-title">The AACM Rewrites the Rules</div><div class="tl-card-body">In 1965, pianist and composer Muhal Richard Abrams founded the Association for the Advancement of Creative Musicians (AACM) on the South Side. It was a radical act: Black musicians taking collective ownership of their art, their business, and their legacy. The AACM launched the careers of Anthony Braxton, the Art Ensemble of Chicago, Henry Threadgill, Nicole Mitchell, and dozens more. Its influence on jazz — and on music broadly — is incalculable.<div class="tl-tags"><span class="tl-tag" style="background:#2B5BA8">AACM</span><span class="tl-tag" style="background:#1A1A1A">Muhal Richard Abrams</span><span class="tl-tag" style="background:#1A1A1A">Art Ensemble</span><span class="tl-tag" style="background:#1A1A1A">Nicole Mitchell</span></div></div><span class="tl-toggle">Read more ↓</span></div></div>
+              <div class="tl-entry" onclick="toggleCard(this)"><div class="tl-year"><span class="tl-year-text">1970s<br>–1990s</span></div><div class="tl-dot-wrap"><div class="tl-dot" style="background:#F2B02E"></div></div><div class="tl-card" style="border-left-color:#F2B02E"><div class="tl-card-title">Institutions Take Root</div><div class="tl-card-body">The Jazz Institute of Chicago, founded in 1969, became the city's anchor organization for jazz education, advocacy, and the celebrated Chicago Jazz Festival — launched in 1979 in Grant Park, free, outdoors, and world-class. Chicago's jazz scene diversified: Latin jazz, fusion, and straight-ahead traditions all flourished side by side.<div class="tl-tags"><span class="tl-tag" style="background:#F2B02E;color:#1A1A1A">Jazz Institute</span><span class="tl-tag" style="background:#F2B02E;color:#1A1A1A">Chicago Jazz Festival</span><span class="tl-tag" style="background:#F2B02E;color:#1A1A1A">Grant Park</span></div></div><span class="tl-toggle">Read more ↓</span></div></div>
+              <div class="tl-entry" onclick="toggleCard(this)"><div class="tl-year"><span class="tl-year-text">2000s<br>–Today</span></div><div class="tl-dot-wrap"><div class="tl-dot" style="background:#1A1A1A;border-color:#aaa"></div></div><div class="tl-card" style="border-left-color:#1A1A1A"><div class="tl-card-title">A Living Tradition</div><div class="tl-card-body">Chicago's jazz scene today is vibrant and multigenerational. Artists like Makaya McCraven, Marquis Hill, Isaiah Collier, Nicole Mitchell, and the Von Freeman legacy — carried forward by his son Chico Freeman — push the tradition into new territory while honoring its roots. The Green Mill, open since 1907, still swings on Sunday nights. And the South Side, where it all began, is once again a center of jazz activity.<div class="tl-tags"><span class="tl-tag" style="background:#1A1A1A">Makaya McCraven</span><span class="tl-tag" style="background:#1A1A1A">Green Mill</span><span class="tl-tag" style="background:#1A1A1A">Marquis Hill</span><span class="tl-tag" style="background:#2B5BA8">Von Freeman legacy</span></div></div><span class="tl-toggle">Read more ↓</span></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── SLIDE 2: WHO'S WHO ────────────────────────────────────── -->
+      <div class="sl-slide" id="slide-2">
+        <div class="slide-tabbed">
+          <div class="slide-header"><span class="slide-header-title">Who's Who in Chicago Jazz</span></div>
+          <div class="tab-bar">
+            <button class="tab-btn active" onclick="switchTab('ww','originals',this)">Chicago Originals</button>
+            <button class="tab-btn" onclick="switchTab('ww','connections',this)">Chicago Connections</button>
+            <button class="tab-btn" onclick="switchTab('ww','today',this)">The Scene Today</button>
+          </div>
+          <div class="tab-scroll" id="ww-scroll">
+            <div class="tab-panel active" id="ww-originals">
+              <p class="tab-intro">Born here or made Chicago their home — artists who shaped the city's jazz identity across a century.</p>
+              <div class="artist-grid" id="originals-grid"></div>
+              <div class="ww-spotlight"><div class="ww-spotlight-inner">
+                <div class="ww-spotlight-label">✦ Spotlight</div>
+                <div class="ww-spotlight-title">DuSable High School</div>
+                <div class="ww-spotlight-text">On the South Side, DuSable High School produced an almost implausible number of major jazz figures — Nat King Cole, Johnny Griffin, Clifford Jordan, Von Freeman, and many others. Under Captain Walter Dyett's direction from 1931 to 1962, the music program was legendary. Dyett was a demanding, visionary teacher who pushed his students relentlessly. The results speak for themselves.</div>
+              </div></div>
+            </div>
+            <div class="tab-panel" id="ww-connections">
+              <p class="tab-intro">Major artists with deep, formative Chicago ties — born here, shaped here, or permanently marked by the city's musical culture.</p>
+              <div class="artist-grid" id="connections-grid"></div>
+            </div>
+            <div class="tab-panel" id="ww-today">
+              <p class="tab-intro" style="margin-bottom:14px;">A personal selection of artists shaping Chicago jazz right now.</p>
+              <div class="scene-grid" id="today-grid"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── SLIDE 3: WHERE TO HEAR ────────────────────────────────── -->
+      <div class="sl-slide" id="slide-3">
+        <div class="slide-tabbed">
+          <div class="slide-header"><span class="slide-header-title">Where to Hear Jazz in Chicago</span></div>
+          <div class="intro-band">Chicago's jazz scene isn't museum music — it's alive, seven nights a week, across the city. Here's where to find it.</div>
+          <div class="tab-bar">
+            <button class="tab-btn active" onclick="switchTab('wth','clubs',this)">🎷 Jazz Clubs</button>
+            <button class="tab-btn" onclick="switchTab('wth','venues',this)">🎹 Other Venues</button>
+            <button class="tab-btn" onclick="switchTab('wth','festivals',this)">🥁 Festivals & Events</button>
+          </div>
+          <div class="tab-scroll" id="wth-scroll">
+            <div class="tab-panel active" id="wth-clubs"><div class="venue-grid" id="clubs-grid"></div></div>
+            <div class="tab-panel" id="wth-venues"><div class="venue-grid" id="venues-grid"></div></div>
+            <div class="tab-panel" id="wth-festivals"><div class="fest-list" id="festivals-list"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── SLIDE 4: QUIZ PLACEHOLDER ────────────────────────────── -->
+      <div class="sl-slide" id="slide-4">
+        <div class="slide-placeholder">
+          <div class="ph-title">Test Your Jazz IQ</div>
+          <div class="ph-sub">Interactive quiz — to be built in Claude Code</div>
+        </div>
+      </div>
+
+      <!-- ── SLIDE 5: CALENDAR PLACEHOLDER ────────────────────────── -->
+      <div class="sl-slide" id="slide-5">
+        <div class="slide-placeholder">
+          <div class="ph-title">Plan Your Jazz Calendar</div>
+          <div class="ph-sub">Event planner + map — to be built in Claude Code</div>
+        </div>
+      </div>
+
+    </div><!-- end .sl-content -->
+  </div><!-- end .sl-middle -->
+
+  <!-- BOTTOM BAR -->
+  <div class="sl-bottombar">
+    <div class="bar-media hidden" id="mediaControls">
+      <button class="bar-btn round" aria-label="Play">&#9654;</button>
+      <div class="bar-progress"><div class="bar-progress-fill" id="mediaProg"></div></div>
+      <button class="bar-btn" style="width:32px;height:32px;padding:0;" aria-label="Rewind">↺</button>
+      <button class="bar-btn" style="width:32px;height:32px;padding:0;" aria-label="Volume">♪</button>
+      <button class="bar-btn" style="width:32px;height:32px;padding:0;font-size:10px;" aria-label="CC">CC</button>
+      <button class="bar-btn" style="width:32px;height:32px;padding:0;" aria-label="Settings">⚙</button>
+      <div class="bar-divider"></div>
+    </div>
+    <div class="bar-nav">
+      <span class="bar-counter" id="slideCounter">1 / 6</span>
+      <div class="bar-divider"></div>
+      <button class="bar-btn" id="prevBtn" onclick="prevSlide()">&#8249; Prev</button>
+      <button class="bar-btn" id="nextBtn" onclick="nextSlide()">Next &#8250;</button>
+    </div>
+  </div>
+
+</div><!-- end .sl-outer -->
+
+<script>
+  // ── CONSTANTS ──────────────────────────────────────────────────────
+  const TOTAL = 6;
+  const HAS_MEDIA = [false, false, false, false, false, false];
+
+  // ── STATE ──────────────────────────────────────────────────────────
+  let current = 0;
+  let sidebarOpen = true;
+
+  // ── ARTIST DATA ────────────────────────────────────────────────────
+  const ORIGINALS = [
+    { name:'Lovie Austin', dates:'1887–1972', initials:'LA', color:'#E8403A',
+      preview:'One of the most important and least-celebrated figures in early jazz.',
+      bio:'Austin led the house band at the Monogram Theatre on the South Side for over 20 years, accompanying Ma Rainey and Bessie Smith. She composed prolifically, led sessions, and mentored younger musicians — in an era when Black women in jazz were rarely credited, let alone celebrated.', listen:null },
+    { name:'Lil Hardin Armstrong', dates:'1898–1971', initials:'LH', color:'#2B5BA8',
+      preview:'A brilliant pianist and bandleader — the driving force behind Louis Armstrong\'s early rise.',
+      bio:'Considered one of the greats of her era, she encouraged Armstrong to leave King Oliver\'s band and lead his own. After their marriage dissolved, she rebuilt her career and continued performing for decades. A woman who gave more than history has acknowledged.', listen:null },
+    { name:'Nat King Cole', dates:'1919–1965', initials:'NC', color:'#F2B02E',
+      preview:'Born in Alabama, raised on the South Side — Chicago gave him his foundation.',
+      bio:'Cole came up in Chicago\'s jazz clubs in the 1930s before his trio recordings and singular vocal style made him one of the most beloved artists in American music.', listen:null },
+    { name:'Dinah Washington', dates:'1924–1963', initials:'DW', color:'#E8403A',
+      preview:'"The Queen" — one of the most versatile voices in jazz and R&B.',
+      bio:'Born in Alabama, raised in Chicago. Washington sang in church on the South Side before Lionel Hampton hired her in 1943. Equally at home in blues, ballads, and bebop.', listen:null },
+    { name:'Von Freeman', dates:'1922–2012', initials:'VF', color:'#2B5BA8',
+      preview:'The patriarch of Chicago\'s first family of jazz — seven decades on the bandstand.',
+      bio:'Freeman spent virtually his entire career in Chicago, playing his searching tenor saxophone in clubs large and small. His son Chico Freeman carries the legacy forward as a world-class saxophonist.', listen:null },
+    { name:'Johnny Griffin', dates:'1928–2008', initials:'JG', color:'#F2B02E',
+      preview:'"The Little Giant" — one of the fastest tenor saxophonists in hard bop.',
+      bio:'Griffin studied at DuSable High School before cutting his teeth at the Beehive Lounge and launching an international career. Small in stature, enormous in sound.', listen:null },
+    { name:'Clifford Jordan', dates:'1931–1993', initials:'CJ', color:'#E8403A',
+      preview:'South Side native — a hard bop tenor of deep harmonic sophistication.',
+      bio:'A DuSable High School alumnus whose career took him from Chicago\'s clubs to the stages of the world. His rich, burnished tone was instantly recognizable.', listen:null },
+    { name:'Eddie Harris', dates:'1934–1996', initials:'EH', color:'#2B5BA8',
+      preview:'Bridged hard bop, soul jazz, and R&B — and pioneered the electric saxophone.',
+      bio:'His 1961 recording of "Exodus" was one of the first jazz singles to go gold. Harris remained restlessly experimental throughout his career, always finding new sounds.', listen:null },
+    { name:'Muhal Richard Abrams', dates:'1930–2017', initials:'MR', color:'#F2B02E',
+      preview:'Founding visionary of the AACM — he didn\'t just make music, he built an institution.',
+      bio:'Pianist, composer, and the creative force behind the AACM, which transformed Chicago\'s avant-garde scene into a global force.', listen:null },
+    { name:'Sun Ra', dates:'1914–1993', initials:'SR', color:'#E8403A',
+      preview:'Chicago was the laboratory for one of jazz\'s most singular visions.',
+      bio:'Spent the crucial 1940s–50s developing his Arkestra and cosmic philosophy on the South Side before moving to New York. His Chicago years were the seedbed for a lifetime of visionary music.', listen:null },
+  ];
+
+  const CONNECTIONS = [
+    { name:'Louis Armstrong', dates:'1901–1971', initials:'LA', color:'#E8403A',
+      preview:'Arrived from New Orleans in 1922 and transformed Chicago\'s scene immediately.',
+      bio:'His Hot Five and Hot Seven recordings, made in Chicago, are among the most important documents in jazz history. Chicago gave him the stage to become the most influential jazz musician of all time.', listen:null },
+    { name:'Benny Goodman', dates:'1909–1986', initials:'BG', color:'#2B5BA8',
+      preview:'Born and raised in Chicago — the "King of Swing" started here.',
+      bio:'Goodman got his start in Chicago\'s dance bands before leading the orchestra that launched the Swing Era nationally in 1935.', listen:null },
+    { name:'Herbie Hancock', dates:'b. 1940', initials:'HH', color:'#F2B02E',
+      preview:'Born in Chicago — the city\'s musical rigor is in his DNA.',
+      bio:'Studied piano in Chicago and began his professional career before moving to New York to join Miles Davis\'s historic quintet. One of jazz\'s most endlessly creative voices.', listen:null },
+    { name:'Nicole Mitchell', dates:'b. 1971', initials:'NM', color:'#1A1A1A',
+      preview:'AACM member whose work bridges jazz, classical, and Afrofuturism.',
+      bio:'Flutist and composer whose artistic roots are deeply embedded in the AACM tradition. Though based primarily outside Chicago in recent years, her Chicago formation defines her musical identity.', listen:null },
+  ];
+
+  const TODAY = [
+    { name:'Marquis Hill', role:'Trumpet / Composer', text:'One of Chicago\'s most prominent jazz ambassadors — accessible, sophisticated, deeply rooted.', listen:null },
+    { name:'Makaya McCraven', role:'Drums / Producer', text:'"Organic beat music" — live jazz improvisation meets hip-hop production. A global audience, rooted in Chicago.', listen:null },
+    { name:'Isaiah Collier', role:'Tenor Saxophone', text:'Already drawing Coltrane comparisons, leading one of the most exciting groups in Chicago jazz right now.', listen:null },
+    { name:'Juan Pastor', role:'Percussion / Composer', text:'Afro-Peruvian roots. Founder of Juan Pastor\'s Chicano, and a wide-ranging collaborator at the heart of Chicago\'s multicultural jazz scene.', listen:null },
+    { name:'Kyle & Christian Swan', role:'Multi-instrumentalists', text:'Twin brothers bringing joyful, swinging energy to Chicago\'s club scene.', listen:null },
+    { name:'Charles Rick Heath', role:'Drums / Bandleader', text:'Deep groove and genuine commitment to nurturing Chicago\'s jazz community.', listen:null },
+    { name:'Sharel Cassidy', role:'Alto Saxophone', text:'Powerful, singing tone — equally at home in straight-ahead and adventurous contexts.', listen:null },
+    { name:'Dee Alexander', role:'Vocals', text:'Extraordinary range and depth across jazz, blues, and gospel. A Chicago institution.', listen:null },
+    { name:'Alyssa Allgood', role:'Vocals', text:'Warm, assured sound and a growing national profile. One to watch.', listen:null },
+    { name:'Tammy McCann', role:'Vocals', text:'Interpretive depth and an uncanny ability to inhabit a lyric completely.', listen:null },
+    { name:'Kurt Elling', role:'Vocals', text:'One of the most celebrated jazz vocalists of his generation. Forever connected to the Green Mill.', listen:null },
+    { name:'Patricia Barber', role:'Piano / Vocals', text:'Monday nights at the Green Mill. Brainy, sardonic, completely original.', listen:null },
+    { name:'Thaddeus Tukes', role:'Tenor Saxophone', text:'Warm, soulful voice bringing depth to Chicago\'s current scene.', listen:null },
+    { name:'Michael Allemana', role:'Guitar', text:'Deep bebop roots, lyrical approach. A cornerstone of Chicago\'s working jazz community.', listen:null },
+    { name:'Fareed Haque', role:'Guitar / Composer', text:'Jazz, classical, world music — a genuinely singular voice. Professor at Northern Illinois University.', listen:null },
+  ];
+
+  // ── VENUE DATA ─────────────────────────────────────────────────────
+  const CLUBS = [
+    { name:'Jazz Showcase', neighborhood:'South Loop', tagColor:'#E8403A', preview:'Chicago\'s most storied jazz club — world-class artists, intimate setting.', bio:'Founded in 1947 by Joe Segal, the Jazz Showcase has moved several times over its long history and is currently located in the South Loop. Now run by Joe\'s son Wayne, it continues to book world-class artists in an intimate listening-room setting.', url:null },
+    { name:'Green Mill Cocktail Lounge', neighborhood:'Uptown', tagColor:'#2B5BA8', preview:'Open since 1907 — Chicago\'s most atmospheric jazz club.', bio:'Al Capone had his booth. Patricia Barber held Monday nights for decades. Kurt Elling built his legend here. One of the most storied jazz rooms in the world, on Lawrence Avenue.', url:null },
+    { name:'Andy\'s Jazz Club', neighborhood:'Downtown', tagColor:'#F2B02E', preview:'A downtown institution — lunchtime sets, evening sets, no pretension.', bio:'Andy\'s has been presenting live jazz since 1951, with a warm, unpretentious vibe that makes it accessible to everyone from first-timers to serious fans.', url:null },
+    { name:'Winter\'s Jazz Club', neighborhood:'River North', tagColor:'#E8403A', preview:'Intimate and music-first — a serious room for serious listening.', bio:'A newer addition that has quickly established itself as a room that takes the music seriously, with thoughtful booking and a setting that keeps the focus on the artists.', url:null },
+    { name:'Le Piano', neighborhood:'Rogers Park', tagColor:'#2B5BA8', preview:'A neighborhood jazz hub on the city\'s far North Side.', bio:'Le Piano has become a genuine community hub for Chicago\'s jazz scene, with regular programming and an unpretentious, music-first atmosphere that reflects the diverse character of Rogers Park.', url:null },
+  ];
+
+  const VENUES = [
+    { name:'Constellation', neighborhood:'Irving Park', tagColor:'#2B5BA8', preview:'The room for adventurous jazz — AACM artists, free jazz, creative improvisation.', bio:'If you want to hear where Chicago jazz is going next, this is the room. Constellation books the more adventurous end of the spectrum and takes its role as a listening room seriously.', url:null },
+    { name:'California Clipper', neighborhood:'Humboldt Park', tagColor:'#E8403A', preview:'A beautifully preserved 1940s cocktail lounge with jazz and swing.', bio:'A setting that feels genuinely of another era — in the best possible way. The California Clipper presents jazz and swing in a room that looks and feels like it was built for exactly this music.', url:null },
+    { name:'Symphony Center', neighborhood:'Loop', tagColor:'#F2B02E', preview:'Occasional major jazz artists in a grand concert setting.', bio:'The Chicago Symphony Orchestra\'s home occasionally presents major jazz artists. When they do, it\'s an event worth dressing up for.', url:null },
+    { name:'Ravinia Festival', neighborhood:'Highland Park', tagColor:'#1A1A1A', preview:'Legendary outdoor festival — summer only. Bring a blanket.', bio:'The legendary outdoor festival in Highland Park regularly features major jazz artists alongside its classical programming. Summer only, and one of the great outdoor music experiences in the Midwest.', url:null },
+  ];
+
+  const FESTIVALS = [
+    { name:'Chicago Jazz Festival', when:'Labor Day Weekend', accentColor:'#E8403A', whenColor:'#E8403A', text:'The crown jewel — free, outdoors, in Millennium Park, over Labor Day weekend. Four days of world-class jazz presented by the Jazz Institute of Chicago. One of the great free music events in the world, full stop.', url:null },
+    { name:'Hyde Park Jazz Festival', when:'Late September', accentColor:'#2B5BA8', whenColor:'#2B5BA8', text:'A deeply beloved festival in the South Side neighborhood that gave jazz so much. Spread across multiple indoor and outdoor venues, community-rooted, musically adventurous, and free.', url:null },
+    { name:'Chicago Winter Jazz Fair', when:'February', accentColor:'#F2B02E', whenColor:'#b07d00', text:'Organized by the Jazz Institute of Chicago every February — a warm breeze in the depths of winter. A celebration of Chicago\'s living jazz scene at the time of year when you need it most.', url:null },
+    { name:'Jazz Institute of Chicago', when:'Year-Round', accentColor:'#1A1A1A', whenColor:'#888', text:'Beyond the festivals, the Jazz Institute presents events, educational programs, and community initiatives throughout the year. Their website is the essential resource for knowing what\'s happening in Chicago jazz.', url:null },
+  ];
+
+  // ── AVATAR ─────────────────────────────────────────────────────────
+  const SHAPES = ['circle','rect','diamond','triangle'];
+  function makeAvatar(initials, bgColor, idx) {
+    const shape = SHAPES[idx % 4];
+    const sc = 'rgba(255,255,255,0.35)';
+    const sf = 'rgba(0,0,0,0.18)';
+    let s = '';
+    if (shape==='circle')   s=`<circle cx="36" cy="36" r="26" fill="${sf}" stroke="${sc}" stroke-width="2.5"/>`;
+    if (shape==='rect')     s=`<rect x="10" y="10" width="52" height="52" fill="${sf}" stroke="${sc}" stroke-width="2.5"/>`;
+    if (shape==='diamond')  s=`<polygon points="36,9 63,36 36,63 9,36" fill="${sf}" stroke="${sc}" stroke-width="2.5"/>`;
+    if (shape==='triangle') s=`<polygon points="36,11 64,61 8,61" fill="${sf}" stroke="${sc}" stroke-width="2.5"/>`;
+    return `<svg viewBox="0 0 72 72" xmlns="http://www.w3.org/2000/svg" width="72" height="72" style="display:block;">
+      <rect width="72" height="72" fill="${bgColor}"/>
+      ${s}
+      <text x="36" y="40" text-anchor="middle" dominant-baseline="middle"
+        font-family="'Bebas Neue',Arial Black,sans-serif"
+        font-size="20" fill="rgba(255,255,255,0.95)" letter-spacing="2">${initials}</text>
+    </svg>`;
+  }
+
+  // ── RENDER ─────────────────────────────────────────────────────────
+  function renderArtistGrid(containerId, data) {
+    document.getElementById(containerId).innerHTML = data.map((a,i) => `
+      <div class="artist-card">
+        <div class="artist-card-top">
+          <div class="artist-avatar">${makeAvatar(a.initials, a.color, i)}</div>
+          <div class="artist-card-info" style="border-top-color:${a.color}">
+            <div class="artist-name">${a.name}</div>
+            <div class="artist-dates">${a.dates}</div>
+            <div class="artist-preview">${a.preview}</div>
+          </div>
+        </div>
+        <div class="artist-card-body" id="ab-${containerId}-${i}">${a.bio}</div>
+        <div class="artist-card-footer">
+          ${a.listen ? `<a class="artist-listen" href="${a.listen}" target="_blank">▶ Listen</a>` : `<span class="artist-listen placeholder">▶ Listen</span>`}
+          <span class="artist-toggle" onclick="toggleExpand('ab-${containerId}-${i}',this,event)">Read more ↓</span>
+        </div>
+      </div>`).join('');
+  }
+
+  function renderToday() {
+    document.getElementById('today-grid').innerHTML = TODAY.map(a => `
+      <div class="scene-card">
+        <div class="scene-name">${a.name}</div>
+        <div class="scene-role">${a.role}</div>
+        <div class="scene-text">${a.text}</div>
+        ${a.listen ? `<a class="scene-listen" href="${a.listen}" target="_blank">▶ Listen</a>` : `<span class="scene-listen placeholder">▶ Link coming</span>`}
+      </div>`).join('');
+  }
+
+  function renderVenueGrid(containerId, data) {
+    document.getElementById(containerId).innerHTML = data.map((v,i) => `
+      <div class="venue-card">
+        <div class="venue-card-top" style="border-top-color:${v.tagColor}">
+          <div class="venue-name">${v.name}</div>
+          <span class="venue-tag" style="background:${v.tagColor}">${v.neighborhood}</span>
+          <div class="venue-preview">${v.preview}</div>
+        </div>
+        <div class="venue-body" id="vb-${containerId}-${i}">${v.bio}</div>
+        <div class="venue-footer">
+          ${v.url ? `<a class="venue-visit" href="${v.url}" target="_blank">↗ Visit</a>` : `<span class="venue-visit placeholder">↗ Link coming</span>`}
+          <span class="venue-toggle" onclick="toggleExpand('vb-${containerId}-${i}',this,event)">More ↓</span>
+        </div>
+      </div>`).join('');
+  }
+
+  function renderFestivals() {
+    document.getElementById('festivals-list').innerHTML = FESTIVALS.map(f => `
+      <div class="fest-card">
+        <div class="fest-accent" style="background:${f.accentColor}"></div>
+        <div class="fest-body">
+          <div class="fest-name">${f.name}</div>
+          <div class="fest-when" style="color:${f.whenColor}">${f.when}</div>
+          <div class="fest-text">${f.text}</div>
+          ${f.url ? `<a class="fest-visit" href="${f.url}" target="_blank">↗ Visit</a>` : `<span class="fest-visit placeholder">↗ Link coming</span>`}
+        </div>
+      </div>`).join('');
+  }
+
+  // ── INTERACTIONS ───────────────────────────────────────────────────
+  function toggleCard(el) {
+    const card = el.querySelector('.tl-card');
+    const toggle = el.querySelector('.tl-toggle');
+    toggle.textContent = card.classList.toggle('expanded') ? 'Read less ↑' : 'Read more ↓';
+  }
+
+  function toggleExpand(id, btn, e) {
+    if (e) e.stopPropagation();
+    const el = document.getElementById(id);
+    btn.textContent = el.classList.toggle('expanded')
+      ? (btn.textContent.includes('Read') ? 'Read less ↑' : 'Less ↑')
+      : (btn.textContent.includes('Read') ? 'Read more ↓' : 'More ↓');
+  }
+
+  function switchTab(prefix, name, btn) {
+    const scroll = document.getElementById(prefix + '-scroll');
+    scroll.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.getElementById(prefix + '-' + name).classList.add('active');
+    scroll.closest('.slide-tabbed').querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    scroll.scrollTop = 0;
+  }
+
+  // ── NAVIGATION ─────────────────────────────────────────────────────
+  function toggleSidebar() {
+    sidebarOpen = !sidebarOpen;
+    document.getElementById('sidebar').classList.toggle('collapsed', !sidebarOpen);
+  }
+
+  function goToSlide(n) {
+    if (n < 0 || n >= TOTAL) return;
+    const target = document.getElementById('menu-' + n);
+    if (target && target.classList.contains('locked')) return;
+
+    document.getElementById('slide-' + current).classList.remove('active');
+    const prevMenu = document.getElementById('menu-' + current);
+    if (prevMenu) { prevMenu.classList.add('completed'); prevMenu.classList.remove('active'); }
+    const prevIcon = document.getElementById('icon-' + current);
+    if (prevIcon && !prevIcon.textContent.includes('✓')) prevIcon.textContent = '✓';
+
+    current = n;
+    document.getElementById('slide-' + current).classList.add('active');
+    const curMenu = document.getElementById('menu-' + current);
+    if (curMenu) { curMenu.classList.add('active'); curMenu.classList.remove('locked'); }
+
+    if (current + 1 < TOTAL) {
+      const next = document.getElementById('menu-' + (current + 1));
+      if (next && next.classList.contains('locked')) {
+        next.classList.remove('locked');
+        const icon = document.getElementById('icon-' + (current + 1));
+        if (icon) icon.textContent = '○';
+      }
+    }
+    updateUI();
+  }
+
+  function prevSlide() { goToSlide(current - 1); }
+  function nextSlide() { goToSlide(current + 1); }
+
+  function updateUI() {
+    document.getElementById('prevBtn').disabled = current === 0;
+    document.getElementById('prevBtn').style.opacity = current === 0 ? '0.4' : '1';
+    document.getElementById('nextBtn').disabled = current === TOTAL - 1;
+    document.getElementById('nextBtn').style.opacity = current === TOTAL - 1 ? '0.4' : '1';
+    document.getElementById('slideCounter').textContent = (current + 1) + ' / ' + TOTAL;
+    document.getElementById('mediaControls').classList.toggle('hidden', !HAS_MEDIA[current]);
+  }
+
+  // ── INIT ───────────────────────────────────────────────────────────
+  renderArtistGrid('originals-grid', ORIGINALS);
+  renderArtistGrid('connections-grid', CONNECTIONS);
+  renderToday();
+  renderVenueGrid('clubs-grid', CLUBS);
+  renderVenueGrid('venues-grid', VENUES);
+  renderFestivals();
+  updateUI();
+</script>
+
+</body>
+</html>
