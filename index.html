@@ -8,10 +8,13 @@
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { background: #111; display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; font-family: 'Inter', sans-serif; }
+    html, body { height: 100%; }
+    body { background: #111; font-family: 'Inter', sans-serif; }
 
     /* ── SHELL ─────────────────────────────────────────────────────── */
-    .sl-outer { background: #1a1a1a; width: 100%; max-width: 1100px; height: 620px; display: flex; flex-direction: column; font-family: 'Inter', sans-serif; border-radius: 8px; overflow: hidden; box-shadow: 0 8px 40px rgba(0,0,0,0.6); }
+    /* Fills the browser window (Storyline-style): top/bottom bars keep a fixed
+       height while the content area reflows to whatever space remains. */
+    .sl-outer { background: #1a1a1a; width: 100vw; height: 100vh; min-width: 320px; min-height: 480px; display: flex; flex-direction: column; font-family: 'Inter', sans-serif; overflow: hidden; }
 
     .sl-topbar { background: #222; height: 44px; display: flex; align-items: center; padding: 0 16px; gap: 16px; border-bottom: 1px solid #383838; flex-shrink: 0; }
     .sl-hamburger { cursor: pointer; display: flex; flex-direction: column; gap: 4px; padding: 4px; background: none; border: none; }
@@ -97,11 +100,11 @@
     .tl-dot-wrap { width: 20px; flex-shrink: 0; display: flex; flex-direction: column; align-items: center; padding-top: 5px; position: relative; z-index: 2; }
     .tl-dot { width: 16px; height: 16px; border-radius: 50%; border: 3px solid #F5F0E8; flex-shrink: 0; transition: transform 0.2s; }
     .tl-entry:hover .tl-dot { transform: scale(1.25); }
-    .tl-card { flex: 1; background: #fff; border-left: 5px solid #ccc; padding: 10px 14px; margin-left: 10px; box-shadow: 2px 2px 0 rgba(0,0,0,0.07); transition: transform 0.15s; overflow: hidden; max-height: 52px; }
-    .tl-card.expanded { max-height: 600px; }
+    .tl-card { flex: 1; background: #fff; border-left: 5px solid #ccc; padding: 10px 14px; margin-left: 10px; box-shadow: 2px 2px 0 rgba(0,0,0,0.07); transition: transform 0.15s; }
     .tl-entry:hover .tl-card { transform: translateX(3px); }
     .tl-card-title { font-family: 'Bebas Neue', sans-serif; font-size: 17px; color: #1A1A1A; line-height: 1.15; }
-    .tl-card-body { font-size: 11.5px; color: #3A3530; line-height: 1.6; margin-top: 8px; padding-top: 8px; border-top: 1px solid #eee; }
+    .tl-card-body { font-size: 11.5px; color: #3A3530; line-height: 1.6; margin-top: 0; padding-top: 0; border-top: none; max-height: 0; overflow: hidden; transition: max-height 0.35s ease, margin-top 0.2s, padding-top 0.2s, border-top 0.2s; }
+    .tl-card.expanded .tl-card-body { max-height: 600px; margin-top: 8px; padding-top: 8px; border-top: 1px solid #eee; }
     .tl-toggle { font-size: 10px; font-weight: 600; color: #2B5BA8; text-transform: uppercase; letter-spacing: 0.08em; margin-top: 5px; display: inline-block; }
     .tl-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px; }
     .tl-tag { font-size: 9px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; padding: 2px 7px; border-radius: 2px; color: #fff; }
@@ -212,20 +215,13 @@
     .q-pdot.current { background: #1A1A1A; box-shadow: 0 0 0 2px #F2B02E; }
     .q-score-pill { font-size: 11px; font-weight: 700; color: #1A1A1A; background: #F2B02E; padding: 3px 11px; border-radius: 2px; letter-spacing: 0.04em; }
 
-    .q-card { background: #1A1A1A; padding: 18px 20px; margin-bottom: 18px; position: relative; overflow: hidden; }
+    .q-card { background: #1A1A1A; padding: 16px 20px; margin-bottom: 16px; position: sticky; top: 0; z-index: 5; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.18); }
     .q-card::before { content: ''; position: absolute; top: 0; left: 0; bottom: 0; width: 5px; background: #F2B02E; }
-    .q-card-label { font-size: 9px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: #888; margin-bottom: 8px; }
-    .q-event-name { font-family: 'Bebas Neue', sans-serif; font-size: 26px; line-height: 1.05; color: #F5F0E8; margin-bottom: 4px; }
-    .q-prompt { font-size: 12px; color: #bbb; line-height: 1.5; margin-bottom: 16px; }
+    .q-card-label { font-size: 9px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: #888; margin-bottom: 7px; }
+    .q-event-name { font-family: 'Bebas Neue', sans-serif; font-size: 25px; line-height: 1.05; color: #F5F0E8; margin-bottom: 5px; }
+    .q-prompt { font-size: 12px; color: #bbb; line-height: 1.5; }
     .q-prompt b { color: #F2B02E; font-weight: 600; }
-    .q-answer-btns { display: flex; gap: 12px; }
-    .q-ans { flex: 1; font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 0.06em; padding: 12px; border: none; cursor: pointer; color: #fff; transition: transform 0.1s, filter 0.15s; }
-    .q-ans:hover { filter: brightness(1.12); }
-    .q-ans:active { transform: translateY(1px); }
-    .q-ans.before { background: #E8403A; }
-    .q-ans.after { background: #2B5BA8; }
-    .q-ans:disabled { cursor: default; opacity: 0.45; filter: none; }
-    .q-feedback { margin-top: 14px; padding: 10px 14px; font-size: 12px; line-height: 1.5; border-radius: 3px; display: none; }
+    .q-feedback { margin-top: 12px; padding: 10px 14px; font-size: 12px; line-height: 1.5; border-radius: 3px; display: none; }
     .q-feedback.show { display: block; }
     .q-feedback.correct { background: rgba(92,184,92,0.15); border-left: 3px solid #5cb85c; color: #cdebcd; }
     .q-feedback.incorrect { background: rgba(232,64,58,0.15); border-left: 3px solid #E8403A; color: #f3c9c7; }
@@ -239,6 +235,16 @@
     .q-tl-year { font-family: 'Bebas Neue', sans-serif; font-size: 17px; color: #1A1A1A; width: 42px; flex-shrink: 0; letter-spacing: 0.02em; }
     .q-tl-name { font-size: 11.5px; color: #3A3530; line-height: 1.3; flex: 1; }
     .q-tl-badge { font-size: 8px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #888; background: #fff; padding: 2px 6px; border-radius: 2px; flex-shrink: 0; }
+    .q-tl-item.compare { border-left-color: #1A1A1A; box-shadow: 0 0 0 2px #1A1A1A; background: #fffdf7; }
+    .q-tl-item.compare .q-tl-badge { color: #1A1A1A; background: #F2B02E; }
+
+    /* "Here" placement slots shown above/below the comparison event */
+    .q-slot { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; font-family: 'Bebas Neue', sans-serif; font-size: 16px; letter-spacing: 0.1em; padding: 8px; border: 2px dashed; background: transparent; cursor: pointer; margin-bottom: 5px; transition: background 0.12s, color 0.12s, transform 0.1s; }
+    .q-slot:active { transform: translateY(1px); }
+    .q-slot.before { color: #E8403A; border-color: #E8403A; }
+    .q-slot.before:hover { background: #E8403A; color: #fff; }
+    .q-slot.after { color: #2B5BA8; border-color: #2B5BA8; }
+    .q-slot.after:hover { background: #2B5BA8; color: #fff; }
 
     /* Results */
     #q-results { padding: 24px 28px; }
@@ -255,6 +261,80 @@
     .q-res-year { font-family: 'Bebas Neue', sans-serif; font-size: 16px; color: #1A1A1A; width: 42px; flex-shrink: 0; }
     .q-res-name { font-size: 11.5px; color: #3A3530; line-height: 1.3; flex: 1; }
     .q-results-btns { display: flex; gap: 12px; justify-content: center; }
+
+    /* ── SLIDE 5: CALENDAR ─────────────────────────────────────────── */
+    .slide-cal { background: #F5F0E8; flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+    .cal-body { display: flex; flex: 1; overflow: hidden; }
+    .cal-left { flex: 0 0 42%; min-width: 300px; overflow-y: auto; padding: 16px 18px; border-right: 2px solid #e0dbd3; }
+    .cal-right { flex: 1; min-width: 330px; overflow-y: auto; padding: 16px 18px; }
+    .cal-left::-webkit-scrollbar, .cal-right::-webkit-scrollbar { width: 4px; }
+    .cal-left::-webkit-scrollbar-track, .cal-right::-webkit-scrollbar-track { background: #e8e3db; }
+    .cal-left::-webkit-scrollbar-thumb, .cal-right::-webkit-scrollbar-thumb { background: #2B5BA8; border-radius: 2px; }
+    .cal-section-label { font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: #888; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+    .cal-count { background: #2B5BA8; color: #fff; font-size: 9px; font-weight: 700; padding: 2px 8px; border-radius: 10px; letter-spacing: 0; }
+
+    /* Form */
+    .cal-form { background: #fff; box-shadow: 2px 2px 0 rgba(0,0,0,0.07); padding: 14px; margin-bottom: 18px; }
+    .cal-form-title { font-family: 'Bebas Neue', sans-serif; font-size: 19px; color: #1A1A1A; margin-bottom: 11px; letter-spacing: 0.02em; }
+    .cal-field { margin-bottom: 9px; }
+    .cal-field label { display: block; font-size: 9.5px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #999; margin-bottom: 3px; }
+    .cal-field input, .cal-field select { width: 100%; font-family: 'Inter', sans-serif; font-size: 12px; padding: 7px 9px; border: 1.5px solid #d8d2c8; border-radius: 3px; background: #fbf9f5; color: #3A3530; }
+    .cal-field input:focus, .cal-field select:focus { outline: none; border-color: #2B5BA8; background: #fff; }
+    .cal-field-row { display: flex; gap: 9px; }
+    .cal-field-row .cal-field { flex: 1; }
+    .cal-add-btn { width: 100%; margin-top: 4px; background: #E8403A; color: #F5F0E8; font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: 0.06em; padding: 10px; border: none; cursor: pointer; transition: background 0.15s; }
+    .cal-add-btn:hover { background: #C42E28; }
+    .cal-err { font-size: 11px; color: #E8403A; font-weight: 500; margin-top: 7px; display: none; }
+    .cal-err.show { display: block; }
+
+    /* Event list */
+    .cal-empty { font-size: 11.5px; color: #999; font-style: italic; line-height: 1.55; padding: 18px 14px; text-align: center; background: #fff; box-shadow: 2px 2px 0 rgba(0,0,0,0.05); }
+    .cal-event { display: flex; align-items: stretch; background: #fff; box-shadow: 2px 2px 0 rgba(0,0,0,0.06); margin-bottom: 8px; cursor: pointer; overflow: hidden; border-left: 4px solid #ccc; transition: transform 0.12s, box-shadow 0.12s; }
+    .cal-event:hover { transform: translateX(2px); }
+    .cal-event.selected { box-shadow: 0 0 0 2px #F2B02E, 2px 2px 0 rgba(0,0,0,0.06); }
+    .cal-event-main { flex: 1; padding: 8px 10px; min-width: 0; }
+    .cal-event-perf { font-size: 12.5px; font-weight: 600; color: #1A1A1A; line-height: 1.2; }
+    .cal-event-venue { font-size: 11px; color: #2B5BA8; font-weight: 500; margin-top: 2px; }
+    .cal-event-when { font-size: 10px; color: #888; margin-top: 3px; }
+    .cal-event-cal { display: flex; gap: 12px; margin-top: 6px; }
+    .cal-cal-link { font-size: 9.5px; font-weight: 700; color: #2B5BA8; text-transform: uppercase; letter-spacing: 0.04em; text-decoration: none; cursor: pointer; }
+    .cal-cal-link:hover { color: #1a3d70; text-decoration: underline; }
+    .cal-event-del { width: 32px; flex-shrink: 0; border: none; background: transparent; color: #c4bdb0; font-size: 17px; cursor: pointer; transition: color 0.12s, background 0.12s; }
+    .cal-event-del:hover { background: #fbe9e8; color: #E8403A; }
+
+    /* Map */
+    .cal-map { width: 100%; height: auto; display: block; background: #eef3f6; border: 1px solid #d8d2c8; box-shadow: 2px 2px 0 rgba(0,0,0,0.07); }
+    .map-land { fill: #ece5d8; }
+    .map-lake { fill: #b9d4e6; }
+    .map-zone { opacity: 0.5; }
+    .map-river { fill: none; stroke: #b9d4e6; stroke-width: 5; stroke-linecap: round; stroke-linejoin: round; }
+    .map-zone-label { font-family: 'Inter', sans-serif; font-size: 8px; font-weight: 600; fill: #9a9385; letter-spacing: 0.04em; text-transform: uppercase; }
+    .map-lake-label { font-family: 'Bebas Neue', sans-serif; font-size: 13px; fill: #8fb4cc; letter-spacing: 0.12em; }
+    .map-pin { cursor: pointer; }
+    .map-pin .pin-dot { stroke: #F5F0E8; stroke-width: 2.5; transition: r 0.15s; }
+    .map-pin:hover .pin-dot { stroke: #1A1A1A; }
+    .map-pin .pin-init { font-family: 'Bebas Neue', sans-serif; font-size: 10px; text-anchor: middle; dominant-baseline: central; pointer-events: none; letter-spacing: 0.5px; }
+    .map-pin .pin-label { font-family: 'Inter', sans-serif; font-size: 9px; font-weight: 700; fill: #1A1A1A; text-anchor: middle; opacity: 0; transition: opacity 0.12s; pointer-events: none; paint-order: stroke; stroke: #F5F0E8; stroke-width: 3px; stroke-linejoin: round; }
+    .map-pin:hover .pin-label, .map-pin.selected .pin-label { opacity: 1; }
+
+    /* Off-map Ravinia pin (drawn in the SVG, upper-left, with dashed ring) */
+    .map-pin .pin-ring { pointer-events: none; }
+    .map-pin .pin-arrow { font-family: 'Bebas Neue', sans-serif; font-size: 13px; fill: #F2B02E; text-anchor: middle; pointer-events: none; }
+    .map-off-caption { font-family: 'Inter', sans-serif; font-size: 7.5px; font-weight: 700; fill: #8a8070; letter-spacing: 0.04em; pointer-events: none; }
+
+    /* Floating popover anchored at the selected pin */
+    .cal-map-wrap { position: relative; }
+    .cal-map-pop { position: absolute; z-index: 20; width: 182px; background: #fff; box-shadow: 0 5px 18px rgba(0,0,0,0.28); border-top: 3px solid #2B5BA8; padding: 9px 11px 10px; display: none; }
+    .cal-map-pop.show { display: block; }
+    .pop-close { position: absolute; top: 3px; right: 6px; border: none; background: none; font-size: 16px; line-height: 1; color: #bbb; cursor: pointer; padding: 0; }
+    .pop-close:hover { color: #E8403A; }
+    .pop-name { font-family: 'Bebas Neue', sans-serif; font-size: 17px; color: #1A1A1A; line-height: 1.05; padding-right: 14px; letter-spacing: 0.02em; }
+    .pop-hood { font-size: 10px; color: #888; margin-top: 1px; }
+    .pop-addr { font-size: 10.5px; color: #3A3530; margin-top: 5px; line-height: 1.35; }
+    .pop-links { display: flex; gap: 14px; margin-top: 9px; }
+    .pop-link { font-size: 10px; font-weight: 700; color: #2B5BA8; text-transform: uppercase; letter-spacing: 0.04em; text-decoration: none; cursor: pointer; }
+    .pop-link:hover { color: #1a3d70; text-decoration: underline; }
+    .pop-link.placeholder { color: #c4bdb0; cursor: default; text-decoration: none; }
 
     /* ── PLACEHOLDER ───────────────────────────────────────────────── */
     .slide-placeholder { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #1e1e1e; gap: 12px; }
@@ -311,7 +391,8 @@
                 <div class="para-item"><div class="para-dot" style="background:#E8403A"></div><span class="para-text">Chicago's Jazz Story</span></div>
                 <div class="para-item"><div class="para-dot" style="background:#2B5BA8"></div><span class="para-text">Who's Who</span></div>
                 <div class="para-item"><div class="para-dot" style="background:#F2B02E"></div><span class="para-text">Where to Hear Jazz</span></div>
-                <div class="para-item"><div class="para-dot" style="background:#aaa"></div><span class="para-text">Your Jazz Chicago</span></div>
+                <div class="para-item"><div class="para-dot" style="background:#E8403A"></div><span class="para-text">Test Your Jazz IQ</span></div>
+                <div class="para-item"><div class="para-dot" style="background:#2B5BA8"></div><span class="para-text">Plan Your Calendar</span></div>
               </div>
             </div></div>
           </div>
@@ -422,13 +503,9 @@
                 <div class="q-score-pill"><span id="q-score-live">0</span> correct</div>
               </div>
               <div class="q-card">
-                <div class="q-card-label">Where does this belong?</div>
+                <div class="q-card-label">New event — where does it go?</div>
                 <div class="q-event-name" id="q-event-name">—</div>
                 <div class="q-prompt" id="q-prompt">—</div>
-                <div class="q-answer-btns">
-                  <button class="q-ans before" id="q-btn-before" onclick="answerQuiz('before')">◀ Before</button>
-                  <button class="q-ans after" id="q-btn-after" onclick="answerQuiz('after')">After ▶</button>
-                </div>
                 <div class="q-feedback" id="q-feedback"></div>
               </div>
               <div class="q-tl-title">Your timeline</div>
@@ -453,11 +530,76 @@
         </div>
       </div>
 
-      <!-- ── SLIDE 5: CALENDAR PLACEHOLDER ────────────────────────── -->
+      <!-- ── SLIDE 5: CALENDAR ────────────────────────────────────── -->
       <div class="sl-slide" id="slide-5">
-        <div class="slide-placeholder">
-          <div class="ph-title">Plan Your Jazz Calendar</div>
-          <div class="ph-sub">Event planner + map — to be built in Claude Code</div>
+        <div class="slide-cal">
+          <div class="slide-header"><span class="slide-header-title">Plan Your Jazz Calendar</span><span class="slide-header-sub">Build your night out</span></div>
+          <div class="cal-body">
+
+            <!-- LEFT: form + event list -->
+            <div class="cal-left">
+              <div class="cal-form">
+                <div class="cal-form-title">Add a Show</div>
+                <div class="cal-field-row">
+                  <div class="cal-field"><label for="cal-date">Date</label><input type="date" id="cal-date"></div>
+                  <div class="cal-field"><label for="cal-time">Time</label><input type="time" id="cal-time" step="900"></div>
+                </div>
+                <div class="cal-field"><label for="cal-perf">Performer(s)</label><input type="text" id="cal-perf" placeholder="e.g. Isaiah Collier Quartet"></div>
+                <div class="cal-field"><label for="cal-venue">Venue</label>
+                  <select id="cal-venue" onchange="onVenueSelectChange()"></select>
+                </div>
+                <div class="cal-field" id="cal-other-wrap" style="display:none;"><label for="cal-other">Venue name</label><input type="text" id="cal-other" placeholder="Write in a venue"></div>
+                <button class="cal-add-btn" onclick="addCalEvent()">+ Add to Lineup</button>
+                <div class="cal-err" id="cal-err">Please add a performer and pick a date and venue.</div>
+              </div>
+
+              <div class="cal-section-label">Your Lineup <span class="cal-count" id="cal-count">0</span></div>
+              <div id="cal-list"></div>
+            </div>
+
+            <!-- RIGHT: map -->
+            <div class="cal-right">
+              <div class="cal-section-label">Venue Map — tap a pin or an event</div>
+
+              <div class="cal-map-wrap">
+                <svg class="cal-map" viewBox="0 0 360 470" xmlns="http://www.w3.org/2000/svg" aria-label="Map of Chicago jazz venues">
+                  <rect class="map-land" x="0" y="0" width="360" height="470"/>
+                  <!-- Neighborhood zones (subtle) -->
+                  <g class="map-zone">
+                    <rect x="150" y="8" width="98" height="78" rx="6" fill="#2B5BA8" opacity="0.07"/>
+                    <rect x="150" y="92" width="92" height="70" rx="6" fill="#E8403A" opacity="0.07"/>
+                    <rect x="52" y="120" width="118" height="82" rx="6" fill="#F2B02E" opacity="0.10"/>
+                    <rect x="14" y="250" width="128" height="120" rx="6" fill="#2B5BA8" opacity="0.07"/>
+                    <rect x="128" y="206" width="96" height="58" rx="6" fill="#F2B02E" opacity="0.10"/>
+                    <rect x="136" y="270" width="84" height="46" rx="6" fill="#E8403A" opacity="0.07"/>
+                    <rect x="132" y="322" width="84" height="58" rx="6" fill="#2B5BA8" opacity="0.07"/>
+                    <rect x="112" y="404" width="118" height="80" rx="6" fill="#F2B02E" opacity="0.10"/>
+                  </g>
+                  <!-- Lake Michigan -->
+                  <polygon class="map-lake" points="255,0 250,70 238,150 232,220 244,265 236,310 224,390 214,470 360,470 360,0"/>
+                  <text class="map-lake-label" x="300" y="235" text-anchor="middle" transform="rotate(90 300 235)">LAKE MICHIGAN</text>
+                  <!-- Chicago River -->
+                  <path class="map-river" d="M240,280 L150,288 L140,430 M150,288 L168,150"/>
+                  <!-- Neighborhood labels -->
+                  <g>
+                    <text class="map-zone-label" x="160" y="30">Rogers Park</text>
+                    <text class="map-zone-label" x="158" y="112">Uptown</text>
+                    <text class="map-zone-label" x="62" y="140">Irving Park</text>
+                    <text class="map-zone-label" x="24" y="270">Humboldt Park</text>
+                    <text class="map-zone-label" x="138" y="224">Near North</text>
+                    <text class="map-zone-label" x="146" y="290">Loop</text>
+                    <text class="map-zone-label" x="142" y="340">South Loop</text>
+                    <text class="map-zone-label" x="122" y="424">Hyde Park</text>
+                  </g>
+                  <!-- Venue pins (rendered by JS) -->
+                  <g id="map-pins"></g>
+                </svg>
+                <!-- Floating popover anchored at the selected pin -->
+                <div class="cal-map-pop" id="cal-map-pop"></div>
+              </div>
+            </div>
+
+          </div>
         </div>
       </div>
 
@@ -565,7 +707,7 @@
   const CLUBS = [
     { name:'Jazz Showcase', neighborhood:'South Loop', tagColor:'#E8403A', preview:'Chicago\'s most storied jazz club — world-class artists, intimate setting.', bio:'Founded in 1947 by Joe Segal, the Jazz Showcase has moved several times over its long history and is currently located in the South Loop. Now run by Joe\'s son Wayne, it continues to book world-class artists in an intimate listening-room setting.', url:null },
     { name:'Green Mill Cocktail Lounge', neighborhood:'Uptown', tagColor:'#2B5BA8', preview:'Open since 1907 — Chicago\'s most atmospheric jazz club.', bio:'Al Capone had his booth. Patricia Barber held Monday nights for decades. Kurt Elling built his legend here. One of the most storied jazz rooms in the world, on Lawrence Avenue.', url:null },
-    { name:'Andy\'s Jazz Club', neighborhood:'Downtown', tagColor:'#F2B02E', preview:'A downtown institution — lunchtime sets, evening sets, no pretension.', bio:'Andy\'s has been presenting live jazz since 1951, with a warm, unpretentious vibe that makes it accessible to everyone from first-timers to serious fans.', url:null },
+    { name:'Andy\'s Jazz Club', neighborhood:'Near North', tagColor:'#F2B02E', preview:'A Near North institution — lunchtime sets, evening sets, no pretension.', bio:'Andy\'s has been presenting live jazz since 1951, with a warm, unpretentious vibe that makes it accessible to everyone from first-timers to serious fans.', url:null },
     { name:'Winter\'s Jazz Club', neighborhood:'River North', tagColor:'#E8403A', preview:'Intimate and music-first — a serious room for serious listening.', bio:'A newer addition that has quickly established itself as a room that takes the music seriously, with thoughtful booking and a setting that keeps the focus on the artists.', url:null },
     { name:'Le Piano', neighborhood:'Rogers Park', tagColor:'#2B5BA8', preview:'A neighborhood jazz hub on the city\'s far North Side.', bio:'Le Piano has become a genuine community hub for Chicago\'s jazz scene, with regular programming and an unpretentious, music-first atmosphere that reflects the diverse character of Rogers Park.', url:null },
   ];
@@ -583,6 +725,30 @@
     { name:'Chicago Winter Jazz Fair', when:'February', accentColor:'#F2B02E', whenColor:'#b07d00', text:'Organized by the Jazz Institute of Chicago every February — a warm breeze in the depths of winter. A celebration of Chicago\'s living jazz scene at the time of year when you need it most.', url:null },
     { name:'Jazz Institute of Chicago', when:'Year-Round', accentColor:'#1A1A1A', whenColor:'#888', text:'Beyond the festivals, the Jazz Institute presents events, educational programs, and community initiatives throughout the year. Their website is the essential resource for knowing what\'s happening in Chicago jazz.', url:null },
   ];
+
+  // ── CALENDAR / MAP DATA ────────────────────────────────────────────
+  // Pins plotted on the Chicago SVG (x,y in the 0–360 × 0–600 viewBox).
+  // NOTE: street addresses are best-known approximations — worth verifying.
+  const MAP_VENUES = [
+    { id:'lepiano',       name:'Le Piano',           hood:'Rogers Park',  initials:'LP', color:'#2B5BA8', x:206, y:52,  address:'6970 N Glenwood Ave, Chicago, IL', url:null },
+    { id:'greenmill',     name:'Green Mill',         hood:'Uptown',       initials:'GM', color:'#2B5BA8', x:204, y:128, address:'4802 N Broadway, Chicago, IL',     url:null },
+    { id:'constellation', name:'Constellation',      hood:'Irving Park',  initials:'CO', color:'#2B5BA8', x:108, y:172, address:'3111 N Western Ave, Chicago, IL',   url:null },
+    { id:'winters',       name:"Winter's Jazz Club", hood:'River North',  initials:'WJ', color:'#E8403A', x:198, y:238, address:'465 N McClurg Ct, Chicago, IL',     url:null },
+    { id:'andys',         name:"Andy's Jazz Club",   hood:'Near North',   initials:'AN', color:'#F2B02E', x:184, y:256, address:'11 E Hubbard St, Chicago, IL',      url:null },
+    { id:'symphony',      name:'Symphony Center',    hood:'The Loop',     initials:'SC', color:'#F2B02E', x:206, y:300, address:'220 S Michigan Ave, Chicago, IL',   url:null },
+    { id:'showcase',      name:'Jazz Showcase',      hood:'South Loop',   initials:'JS', color:'#E8403A', x:196, y:348, address:'806 S Plymouth Ct, Chicago, IL',    url:null },
+    { id:'clipper',       name:'California Clipper', hood:'Humboldt Park', initials:'CC', color:'#E8403A', x:78,  y:322, address:'1002 N California Ave, Chicago, IL', url:null },
+  ];
+  // Off-map: drawn in the upper-left of the map with an arrow + dashed ring.
+  const OFFMAP_VENUES = [
+    { id:'ravinia', name:'Ravinia Festival', hood:'Highland Park', initials:'RA', color:'#1A1A1A', x:46, y:56, address:'200 Ravinia Park Rd, Highland Park, IL', url:null },
+  ];
+  const VENUE_INDEX = {};
+  [...MAP_VENUES, ...OFFMAP_VENUES].forEach(v => { VENUE_INDEX[v.id] = v; });
+
+  const CAL_STORAGE_KEY = 'jazz_calendar_events';
+  let calEvents = [];
+  let selectedVenue = null;
 
   // ── QUIZ DATA ──────────────────────────────────────────────────────
   // Three fixed reference points, always pre-placed on the timeline.
@@ -602,11 +768,15 @@
     { year: 1943, name: 'Dinah Washington joins Lionel Hampton\'s band' },
     { year: 1946, name: 'Sun Ra settles in Chicago' },
     { year: 1947, name: 'Joe Segal founds the Jazz Showcase' },
+    { year: 1953, name: 'Nat King Cole records "Live at the Blue Note Chicago"' },
     { year: 1959, name: 'Johnny Griffin records "The Little Giant"' },
     { year: 1961, name: 'Eddie Harris records "Exodus"' },
     { year: 1961, name: 'Sun Ra leaves Chicago for New York' },
     { year: 1969, name: 'The Art Ensemble of Chicago forms' },
     { year: 1969, name: 'The Jazz Institute of Chicago is founded' },
+    { year: 1991, name: 'Kurt Elling begins his Green Mill residency' },
+    { year: 1994, name: 'Patricia Barber starts Monday nights at the Green Mill' },
+    { year: 2007, name: 'First Hyde Park Jazz Festival' },
     { year: 2015, name: 'Makaya McCraven releases "In the Moment"' },
   ];
   const QUIZ_ROUNDS = 8;
@@ -697,7 +867,8 @@
   function toggleCard(el) {
     const card = el.querySelector('.tl-card');
     const toggle = el.querySelector('.tl-toggle');
-    toggle.textContent = card.classList.toggle('expanded') ? 'Read less ↑' : 'Read more ↓';
+    const expanded = card.classList.toggle('expanded');
+    toggle.textContent = expanded ? 'Read less ↑' : 'Read more ↓';
   }
 
   function toggleExpand(id, btn, e) {
@@ -773,18 +944,20 @@
     document.getElementById('q-round-num').textContent = quiz.qIndex + 1;
     document.getElementById('q-event-name').textContent = ev.name;
     document.getElementById('q-prompt').innerHTML =
-      `Did this happen <b>before</b> or <b>after</b> ${neighbor.name} (${neighbor.year})?`;
+      `Find <b>${neighbor.name}</b> on your timeline, then tap the red slot <b>above</b> it or the blue slot <b>below</b> it.`;
 
     const fb = document.getElementById('q-feedback');
     fb.className = 'q-feedback';
     fb.innerHTML = '';
-    document.getElementById('q-btn-before').disabled = false;
-    document.getElementById('q-btn-after').disabled = false;
 
     quiz.queue.forEach((_, i) => {
       const dot = document.getElementById('q-pdot-' + i);
       dot.classList.toggle('current', i === quiz.qIndex);
     });
+
+    renderQuizTimeline({ ask: true });
+    const cmp = document.querySelector('#q-timeline .q-tl-item.compare');
+    if (cmp) cmp.scrollIntoView({ block: 'center', behavior: 'smooth' });
   }
 
   function answerQuiz(choice) {
@@ -801,9 +974,6 @@
     }
     quiz.results.push({ year: ev.year, name: ev.name, correct });
 
-    document.getElementById('q-btn-before').disabled = true;
-    document.getElementById('q-btn-after').disabled = true;
-
     const dot = document.getElementById('q-pdot-' + quiz.qIndex);
     dot.classList.remove('current');
     dot.classList.add(correct ? 'right' : 'wrong');
@@ -815,21 +985,30 @@
       : `✗ <b>Not quite.</b> This happened in <b>${ev.year}</b>${tie ? '' : (correctAnswer === 'before' ? ', before' : ', after') + ` ${neighbor.year}`}.`;
 
     // Place the event correctly regardless of the answer.
-    quiz.placed.push({ year: ev.year, name: ev.name });
+    const placed = { year: ev.year, name: ev.name };
+    quiz.placed.push(placed);
     quiz.placed.sort((a, b) => a.year - b.year);
-    renderQuizTimeline(ev);
+    renderQuizTimeline({ justPlaced: placed });
 
     quiz.qIndex++;
     setTimeout(nextQuizQuestion, 1700);
   }
 
-  function renderQuizTimeline(justPlaced) {
-    document.getElementById('q-timeline').innerHTML = quiz.placed.map(p => {
-      const isNew = justPlaced && p.year === justPlaced.year && p.name === justPlaced.name;
-      const cls = 'q-tl-item' + (p.anchor ? ' anchor' : '') + (isNew ? ' just-placed' : '');
-      const badge = p.anchor ? '<span class="q-tl-badge">Anchor</span>' : '';
-      return `<div class="${cls}"><span class="q-tl-year">${p.year}</span><span class="q-tl-name">${p.name}</span>${badge}</div>`;
-    }).join('');
+  // opts: { ask } shows red/blue "here" slots around the comparison event;
+  //       { justPlaced } highlights the event that was just dropped in.
+  function renderQuizTimeline(opts) {
+    opts = opts || {};
+    const rows = [];
+    quiz.placed.forEach(p => {
+      const isCompare = opts.ask && p === quiz.neighbor;
+      if (isCompare) rows.push(`<button class="q-slot before" onclick="answerQuiz('before')">▲ &nbsp;Here — earlier&nbsp; ▲</button>`);
+      const cls = 'q-tl-item' + (p.anchor ? ' anchor' : '') + (isCompare ? ' compare' : '') + (p === opts.justPlaced ? ' just-placed' : '');
+      const badge = isCompare ? '<span class="q-tl-badge">Compare</span>'
+                  : p.anchor ? '<span class="q-tl-badge">Anchor</span>' : '';
+      rows.push(`<div class="${cls}"><span class="q-tl-year">${p.year}</span><span class="q-tl-name">${p.name}</span>${badge}</div>`);
+      if (isCompare) rows.push(`<button class="q-slot after" onclick="answerQuiz('after')">▼ &nbsp;Here — later&nbsp; ▼</button>`);
+    });
+    document.getElementById('q-timeline').innerHTML = rows.join('');
   }
 
   function showQuizResults() {
@@ -856,6 +1035,244 @@
     showQuizScreen('q-results');
   }
 
+  // ── CALENDAR ENGINE ────────────────────────────────────────────────
+  function buildVenueDropdown() {
+    const sel = document.getElementById('cal-venue');
+    const opts = ['<option value="" disabled selected>Choose a venue…</option>'];
+    MAP_VENUES.forEach(v => opts.push(`<option value="${v.id}">${v.name} — ${v.hood}</option>`));
+    OFFMAP_VENUES.forEach(v => opts.push(`<option value="${v.id}">${v.name} — ${v.hood}</option>`));
+    opts.push('<option value="other">Other / write in…</option>');
+    sel.innerHTML = opts.join('');
+  }
+
+  function onVenueSelectChange() {
+    const isOther = document.getElementById('cal-venue').value === 'other';
+    document.getElementById('cal-other-wrap').style.display = isOther ? 'block' : 'none';
+  }
+
+  function loadCalendar() {
+    try { calEvents = JSON.parse(localStorage.getItem(CAL_STORAGE_KEY)) || []; }
+    catch (e) { calEvents = []; }
+  }
+  function saveCalendar() {
+    try { localStorage.setItem(CAL_STORAGE_KEY, JSON.stringify(calEvents)); } catch (e) {}
+  }
+
+  function addCalEvent() {
+    const date = document.getElementById('cal-date').value;
+    const time = document.getElementById('cal-time').value;
+    const perf = document.getElementById('cal-perf').value.trim();
+    const venueId = document.getElementById('cal-venue').value;
+    const other = document.getElementById('cal-other').value.trim();
+
+    const valid = perf && date && venueId && (venueId !== 'other' || other);
+    if (!valid) { document.getElementById('cal-err').classList.add('show'); return; }
+    document.getElementById('cal-err').classList.remove('show');
+
+    const venueName = venueId === 'other' ? other : VENUE_INDEX[venueId].name;
+    calEvents.push({ id: Date.now() + '-' + Math.random().toString(36).slice(2, 7),
+      date, time, perf, venueId, venueName });
+    saveCalendar();
+
+    // Reset the form (keep date for quick multi-add convenience).
+    document.getElementById('cal-perf').value = '';
+    document.getElementById('cal-time').value = '';
+    document.getElementById('cal-venue').value = '';
+    document.getElementById('cal-other').value = '';
+    onVenueSelectChange();
+
+    renderCalEvents();
+    renderMapPins();
+    renderMapPopover();
+  }
+
+  function deleteCalEvent(id, e) {
+    if (e) e.stopPropagation();
+    calEvents = calEvents.filter(ev => ev.id !== id);
+    saveCalendar();
+    renderCalEvents();
+    renderMapPins();
+    renderMapPopover();
+  }
+
+  function selectVenue(id) {
+    if (id === 'other') id = null; // write-in venues have no map pin
+    selectedVenue = (selectedVenue === id) ? null : id;
+    renderCalEvents();
+    renderMapPins();
+    renderMapPopover();
+  }
+
+  function fmtWhen(date, time) {
+    let out = '';
+    if (date) {
+      const d = new Date(date + 'T00:00');
+      out = isNaN(d) ? date : d.toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric' });
+    }
+    if (time) {
+      const [h, m] = time.split(':').map(Number);
+      const ampm = h >= 12 ? 'PM' : 'AM';
+      const h12 = ((h + 11) % 12) + 1;
+      out += (out ? ' · ' : '') + `${h12}:${String(m).padStart(2,'0')} ${ampm}`;
+    }
+    return out || 'Date TBD';
+  }
+
+  function renderCalEvents() {
+    const list = document.getElementById('cal-list');
+    document.getElementById('cal-count').textContent = calEvents.length;
+    if (!calEvents.length) {
+      list.innerHTML = `<div class="cal-empty">No shows yet. Add one above and it'll appear here — and pin itself on the map.</div>`;
+      return;
+    }
+    const sorted = calEvents.slice().sort((a, b) =>
+      (a.date || '9999').localeCompare(b.date || '9999') || (a.time || '').localeCompare(b.time || ''));
+    list.innerHTML = sorted.map(ev => {
+      const v = VENUE_INDEX[ev.venueId];
+      const color = v ? v.color : '#999';
+      const sel = selectedVenue && ev.venueId === selectedVenue ? ' selected' : '';
+      return `<div class="cal-event${sel}" style="border-left-color:${color}" onclick="selectVenue('${ev.venueId}')">
+        <div class="cal-event-main">
+          <div class="cal-event-perf">${escapeHtml(ev.perf)}</div>
+          <div class="cal-event-venue">${escapeHtml(ev.venueName)}</div>
+          <div class="cal-event-when">${fmtWhen(ev.date, ev.time)}</div>
+          <div class="cal-event-cal">
+            <a class="cal-cal-link" href="${googleCalUrl(ev)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">＋ Google</a>
+            <a class="cal-cal-link" href="#" onclick="downloadIcs('${ev.id}', event); return false;">＋ Apple / .ics</a>
+          </div>
+        </div>
+        <button class="cal-event-del" title="Remove" onclick="deleteCalEvent('${ev.id}', event)">×</button>
+      </div>`;
+    }).join('');
+  }
+
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+  }
+
+  // ── PER-SHOW CALENDAR EXPORT (Google link + universal .ics) ─────────
+  // We only capture a start; default a missing time to 8:00 PM and assume
+  // a 2-hour show for the end time.
+  const CAL_DEFAULT_TIME = '20:00';
+  const CAL_DURATION_MS = 2 * 60 * 60 * 1000;
+  function pad2(n) { return String(n).padStart(2, '0'); }
+
+  function calDateStrings(ev) {
+    const [h, m] = (ev.time || CAL_DEFAULT_TIME).split(':').map(Number);
+    const start = new Date(`${ev.date}T${pad2(h)}:${pad2(m)}:00`);
+    const end = new Date(start.getTime() + CAL_DURATION_MS);
+    const local = d => `${d.getFullYear()}${pad2(d.getMonth()+1)}${pad2(d.getDate())}T${pad2(d.getHours())}${pad2(d.getMinutes())}00`;
+    return { start: local(start), end: local(end) };
+  }
+
+  function googleCalUrl(ev) {
+    const { start, end } = calDateStrings(ev);
+    return 'https://calendar.google.com/calendar/render?action=TEMPLATE'
+      + '&text=' + encodeURIComponent(ev.perf)
+      + '&dates=' + start + '/' + end
+      + '&location=' + encodeURIComponent(ev.venueName)
+      + '&details=' + encodeURIComponent('Added from “A Jazz Lover’s Guide to Chicago.”');
+  }
+
+  function downloadIcs(id, e) {
+    if (e) e.stopPropagation();
+    const ev = calEvents.find(x => x.id === id);
+    if (!ev) return;
+    const { start, end } = calDateStrings(ev);
+    const now = new Date();
+    const stamp = `${now.getUTCFullYear()}${pad2(now.getUTCMonth()+1)}${pad2(now.getUTCDate())}T${pad2(now.getUTCHours())}${pad2(now.getUTCMinutes())}${pad2(now.getUTCSeconds())}Z`;
+    const esc = s => String(s).replace(/([,;\\])/g, '\\$1').replace(/\n/g, '\\n');
+    const ics = [
+      'BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Jazz Guide Chicago//EN', 'CALSCALE:GREGORIAN',
+      'BEGIN:VEVENT', 'UID:' + id + '@jazzguide', 'DTSTAMP:' + stamp,
+      'DTSTART:' + start, 'DTEND:' + end,
+      'SUMMARY:' + esc(ev.perf), 'LOCATION:' + esc(ev.venueName),
+      'DESCRIPTION:' + esc('Added from “A Jazz Lover’s Guide to Chicago.”'),
+      'END:VEVENT', 'END:VCALENDAR'
+    ].join('\r\n');
+    const blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = (ev.perf || 'show').replace(/[^a-z0-9]+/gi, '-').toLowerCase().replace(/^-|-$/g, '') + '.ics';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  }
+
+  function renderMapPins() {
+    const counts = {};
+    calEvents.forEach(ev => { counts[ev.venueId] = (counts[ev.venueId] || 0) + 1; });
+    document.getElementById('map-pins').innerHTML = MAP_VENUES.map(v => {
+      const isSel = selectedVenue === v.id;
+      const r = isSel ? 15 : 11;
+      const fill = isSel ? '#F2B02E' : v.color;
+      const initFill = isSel ? '#1A1A1A' : '#fff';
+      const n = counts[v.id] || 0;
+      const badge = n ? `<circle cx="${v.x + r - 2}" cy="${v.y - r + 2}" r="6.5" fill="#1A1A1A"/>
+        <text x="${v.x + r - 2}" y="${v.y - r + 2}" text-anchor="middle" dominant-baseline="central" font-family="Inter,sans-serif" font-size="8" font-weight="700" fill="#fff">${n}</text>` : '';
+      return `<g class="map-pin${isSel ? ' selected' : ''}" onclick="selectVenue('${v.id}')">
+        <title>${v.name} — ${v.hood}</title>
+        <circle class="pin-dot" cx="${v.x}" cy="${v.y}" r="${r}" fill="${fill}"/>
+        <text class="pin-init" x="${v.x}" y="${v.y}" fill="${initFill}">${v.initials}</text>
+        <text class="pin-label" x="${v.x}" y="${v.y - r - 5}">${v.name}</text>
+        ${badge}
+      </g>`;
+    }).join('') + raviniaMarkup(counts);
+  }
+
+  // Ravinia sits off the map (Highland Park, north) — drawn upper-left with a
+  // north arrow and a dashed white ring to signal it isn't contiguous.
+  function raviniaMarkup(counts) {
+    const v = VENUE_INDEX['ravinia'];
+    const isSel = selectedVenue === 'ravinia';
+    const r = isSel ? 14 : 11;
+    const fill = isSel ? '#F2B02E' : '#1A1A1A';
+    const initFill = isSel ? '#1A1A1A' : '#fff';
+    const n = counts['ravinia'] || 0;
+    const badge = n ? `<circle cx="${v.x + r - 2}" cy="${v.y - r + 2}" r="6.5" fill="#E8403A"/>
+      <text x="${v.x + r - 2}" y="${v.y - r + 2}" text-anchor="middle" dominant-baseline="central" font-family="Inter,sans-serif" font-size="8" font-weight="700" fill="#fff">${n}</text>` : '';
+    return `<g class="map-pin${isSel ? ' selected' : ''}" onclick="selectVenue('ravinia')">
+      <title>Ravinia Festival — Highland Park (north, off-map)</title>
+      <circle class="pin-ring" cx="${v.x}" cy="${v.y}" r="${r + 4}" fill="none" stroke="#F5F0E8" stroke-width="1.5" stroke-dasharray="3 2.5"/>
+      <circle class="pin-dot" cx="${v.x}" cy="${v.y}" r="${r}" fill="${fill}"/>
+      <text class="pin-init" x="${v.x}" y="${v.y}" fill="${initFill}">RA</text>
+      <text class="pin-arrow" x="${v.x}" y="${v.y - r - 7}">↑</text>
+      <text class="map-off-caption" x="${v.x + r + 7}" y="${v.y + 3}">RAVINIA · off-map</text>
+      ${badge}
+    </g>`;
+  }
+
+  // Floating popover anchored at the selected pin (replaces the below-map card).
+  function renderMapPopover() {
+    const pop = document.getElementById('cal-map-pop');
+    const v = selectedVenue ? VENUE_INDEX[selectedVenue] : null;
+    if (!v) { pop.className = 'cal-map-pop'; pop.innerHTML = ''; return; }
+
+    const VBW = 360, VBH = 470;
+    const xr = v.x / VBW, yr = v.y / VBH;
+    pop.style.left = (xr * 100) + '%';
+    pop.style.top = (yr * 100) + '%';
+    const tx = xr > 0.5 ? 'calc(-100% - 16px)' : '16px';
+    const ty = yr < 0.24 ? '-6px' : '-50%';
+    pop.style.transform = `translate(${tx}, ${ty})`;
+    pop.style.borderTopColor = v.color;
+
+    const n = calEvents.filter(e => e.venueId === selectedVenue).length;
+    const cal = v.url
+      ? `<a class="pop-link" href="${v.url}" target="_blank" rel="noopener">↗ Calendar</a>`
+      : `<span class="pop-link placeholder">↗ Calendar soon</span>`;
+    const mapsQuery = encodeURIComponent(v.name + ', ' + (v.address || 'Chicago, IL'));
+    const maps = `<a class="pop-link" href="https://www.google.com/maps/search/?api=1&query=${mapsQuery}" target="_blank" rel="noopener">📍 Map</a>`;
+    pop.className = 'cal-map-pop show';
+    pop.innerHTML = `
+      <button class="pop-close" onclick="selectVenue(null)" aria-label="Close">×</button>
+      <div class="pop-name">${v.name}</div>
+      <div class="pop-hood">${v.hood}${n ? ` · ${n} in your lineup` : ''}</div>
+      ${v.address ? `<div class="pop-addr">${v.address}</div>` : ''}
+      <div class="pop-links">${cal}${maps}</div>`;
+  }
+
   // ── NAVIGATION ─────────────────────────────────────────────────────
   function toggleSidebar() {
     sidebarOpen = !sidebarOpen;
@@ -878,7 +1295,10 @@
     current = n;
     document.getElementById('slide-' + current).classList.add('active');
     const curMenu = document.getElementById('menu-' + current);
-    if (curMenu) { curMenu.classList.add('active'); curMenu.classList.remove('locked'); }
+    if (curMenu) {
+      curMenu.classList.add('active'); curMenu.classList.remove('locked');
+      if (!curMenu.onclick) { const _n = current; curMenu.onclick = () => goToSlide(_n); }
+    }
 
     // Entering the quiz slide always starts at its intro screen.
     if (current === 4) showQuizScreen('q-intro');
@@ -887,6 +1307,8 @@
       const next = document.getElementById('menu-' + (current + 1));
       if (next && next.classList.contains('locked')) {
         next.classList.remove('locked');
+        const idx = +next.id.replace('menu-','');
+        next.onclick = () => goToSlide(idx);
         const icon = document.getElementById('icon-' + (current + 1));
         if (icon) icon.textContent = '○';
       }
@@ -913,6 +1335,22 @@
   renderVenueGrid('clubs-grid', CLUBS);
   renderVenueGrid('venues-grid', VENUES);
   renderFestivals();
+  buildVenueDropdown();
+  loadCalendar();
+  renderCalEvents();
+  renderMapPins();
+  renderMapPopover();
+  // Slide 0 is active from page load, so unlock slide 1 immediately —
+  // the same logic goToSlide() would have run had we navigated here.
+  (function() {
+    const next = document.getElementById('menu-1');
+    if (next && next.classList.contains('locked')) {
+      next.classList.remove('locked');
+      next.onclick = () => goToSlide(1);
+      const icon = document.getElementById('icon-1');
+      if (icon) icon.textContent = '○';
+    }
+  })();
   updateUI();
 </script>
 

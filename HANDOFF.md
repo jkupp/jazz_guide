@@ -5,9 +5,9 @@
 
 ## Project Overview
 
-This is a standalone HTML/CSS/JS e-learning course built to demonstrate that a fully functional, visually rich Articulate Storyline-style module can be built without Storyline. The course is designed for jazz appreciators (newcomer to deep fan) who are visiting or new to Chicago.
+A standalone HTML/CSS/JS e-learning course built to demonstrate that a fully functional, visually rich Articulate Storyline-style module can be built without Storyline. The course is designed for jazz appreciators (newcomer to deep fan) who are visiting or new to Chicago.
 
-The course is a single HTML file. No frameworks, no build tools, no dependencies beyond two Google Fonts. It should run in any modern browser and deploy to Vercel as a static site with zero configuration.
+The course is a **single HTML file**. No frameworks, no build tools, no dependencies beyond two Google Fonts. It runs in any modern browser and deploys to Vercel as a static site with zero configuration.
 
 ---
 
@@ -36,15 +36,18 @@ The course is a single HTML file. No frameworks, no build tools, no dependencies
 - Parallelogram shapes used for featured/spotlight content (`transform: skewX(-8deg)` with inner `skewX(8deg)` counter-rotation)
 
 ### Avatar System
-Each artist gets a unique SVG avatar: solid color background + geometric shape overlay (circle, rect, diamond, triangle) + initials. Shape is determined by `index % 4`, color cycles through palette. Stroke: `rgba(255,255,255,0.35)`, fill: dark/light semi-transparent overlay.
+Each artist gets a unique SVG avatar: solid color background + geometric shape overlay (circle, rect, diamond, triangle) + initials. Shape determined by `index % 4`, color cycles through palette. Stroke: `rgba(255,255,255,0.35)`, fill: dark/light semi-transparent overlay.
 
 ---
 
 ## Course Shell / Chrome
 
+### Responsive Layout
+The shell fills the full browser window (Storyline-style reflow). `.sl-outer` is `width:100vw; height:100vh` with `min-width:320px; min-height:480px` floors. `html, body` are `height:100%` with no padding. The topbar and bottombar are fixed-height (`flex-shrink:0`); the middle content area grows to fill whatever remains.
+
 ### Structure
 ```
-.sl-outer (full height container, border-radius: 6px)
+.sl-outer (100vw × 100vh)
   .sl-topbar (44px, dark #222, hamburger + course title)
   .sl-middle (flex row, fills remaining height)
     .sl-sidebar (240px, collapsible, course menu)
@@ -55,245 +58,132 @@ Each artist gets a unique SVG avatar: solid color background + geometric shape o
 ### Sidebar
 - Dark `#2a2a2a` background
 - Menu items: locked (🔒 / dimmed), active (red left border), completed (✓ green)
-- Unlocks sequentially as learner progresses
+- Sequential unlock: each slide unlocks the next on arrival
+- **Completed items are clickable** — can navigate back to any visited slide
+- `onclick` handlers wired dynamically via `goToSlide()` when a slide is first reached
 - Collapsible via hamburger toggle (width: 0 + opacity: 0)
 
 ### Bottom Bar
-**CRITICAL:** All button styles must be fully inlined (not class-based) due to rendering inconsistency in the chat widget. In the real file, classes are fine.
 - Background: `#2a2a2a`, border-top: `2px solid #555`
 - All buttons: `background:#555; border:2px solid #ccc; border-radius:4px; color:#fff`
 - Play button: circular (`border-radius:50%`)
-- Slide counter: `font-weight:600`, same button style
+- Slide counter: `font-weight:600`
 - Prev/Next: `font-weight:700; text-transform:uppercase; letter-spacing:0.08em`
-- **Conditional media controls:** A `HAS_MEDIA` array controls visibility of play/progress/volume/CC/settings. Currently all `false`. When audio is added, flip to `true` for that slide index.
+- **Conditional media controls:** `HAS_MEDIA` array controls visibility of play/progress/volume/CC/settings. Currently all `false`. Flip to `true` when audio is added.
 
 ### Navigation Logic
 - `current` variable tracks active slide (0-indexed)
-- `goToSlide(n)` handles all transitions: removes active, marks completed, adds active, unlocks next
-- Prev/Next buttons use opacity `0.4` when disabled (not the `disabled` attribute, to avoid style conflicts)
-- Progress bar: `(current / (TOTAL - 1)) * 100)%`
+- `goToSlide(n)` handles all transitions: removes active, marks completed, adds active, unlocks next, wires onclick
+- Forward navigation always allowed (stepping `current + 1`); sidebar jumping requires target to not be locked
+- Prev/Next buttons use opacity `0.4` when disabled
 
 ---
 
 ## Completed Slides
 
 ### Slide 0 — Welcome
-**Status:** Complete
-
-Layout: centered flex column, cream background, geometric color shapes (red circle TL, yellow rect TR, blue circle BR, blue rect BL).
-
-Key elements:
-- Eyebrow label (yellow bg, blue text)
-- Title stack: "A Jazz Lover's" (72px Bebas) / "Guide to" (28px) / "Chicago" (72px, blue)
-- Red divider bar
-- Intro paragraph
-- Parallelogram "In this course" overview (4 sections with colored dots)
-- Red "Let's go →" CTA button
-
-Decorative: two musical note characters (♬ ♩) as faint opacity-0.12 overlays.
+Centered flex column, cream background, geometric color shapes. Title stack, red divider, intro paragraph, parallelogram "In this course" overview (4 sections), red "Let's go →" CTA. Decorative musical note overlays at opacity 0.12.
 
 ---
 
 ### Slide 1 — Chicago's Jazz Story
-**Status:** Complete
+Fixed header + yellow intro band + scrollable vertical timeline.
 
-Layout: fixed header + yellow intro band + scrollable timeline. Header and intro band are `flex-shrink:0`.
+**Timeline structure:**
+- `.tl-entry` is a flex row: year column | dot | `.tl-card`
+- `.tl-card` contains: `.tl-card-title` + `.tl-card-body` (collapses) + `.tl-toggle` (always visible)
+- Collapse mechanic: `.expanded` class is toggled on `.tl-card`; CSS rule `.tl-card.expanded .tl-card-body` transitions `max-height` from `0` → `600px`. The toggle is a sibling of `.tl-card-body` inside `.tl-card` (not inside the body), so it stays visible when collapsed.
 
-Timeline structure:
-```
-.tl-spine-wrap (relative positioned, padding-left: 16px)
-  .tl-spine (absolute, left: 75px, gradient colored vertical line)
-  .tl-entry × 7 (flex row: year | dot | card)
-    .tl-year (58px, right-aligned Bebas text)
-    .tl-dot-wrap (20px, z-index:2)
-    .tl-card (flex:1, colored left border, expand/collapse)
-```
-
-Expand mechanic: click entry → `.tl-card` toggles `.expanded` class (max-height: 52px → 500px). Toggle text: "Read more ↓" / "Read less ↑".
-
-**7 timeline entries:**
-1. 1900s–1920s: The Great Migration (red)
-2. 1920s–1930s: Golden Age South Side Clubs (gold)
-3. 1930s–1940s: Jazz Moves North (blue)
-4. 1950s: Hard Bop, Beehive, Sun Ra (red)
-5. 1960s: AACM (blue) — include Nicole Mitchell as AACM mention
-6. 1970s–1990s: Institutions Take Root (gold)
-7. 2000s–Today: A Living Tradition (near-black)
-
-Tags: colored pill labels for key names/places within each expanded entry.
+7 eras: Great Migration (red) → South Side Golden Age (gold) → Jazz Moves North (blue) → Hard Bop / Sun Ra (red) → AACM (blue) → Institutions Take Root (gold) → A Living Tradition (near-black).
 
 ---
 
 ### Slide 2 — Who's Who in Chicago Jazz
-**Status:** Complete
+Fixed header + 3 tabs + scrollable panel per tab.
 
-Layout: fixed header + 3 tabs + scrollable panel per tab.
+**Tab 1: Chicago Originals** — 2-column artist grid (10 artists) + DuSable spotlight card  
+**Tab 2: Chicago Connections** — 2-column grid (4 artists)  
+**Tab 3: The Scene Today** — 3-column dark grid (15 artists)
 
-**Tab 1: Chicago Originals**
-2-column artist grid. Each card:
-```
-.artist-card
-  .artist-card-top
-    .artist-avatar (72×72 SVG — see Avatar System above)
-    .artist-card-info (name, dates, preview text, colored top border)
-  .artist-card-body (expandable bio, max-height: 0 → 200px)
-  .artist-card-footer (▶ Listen placeholder | Read more toggle)
-```
-
-Artists (in order): Lovie Austin, Lil Hardin Armstrong, Nat King Cole, Dinah Washington, Von Freeman, Johnny Griffin, Clifford Jordan, Eddie Harris, Muhal Richard Abrams, Sun Ra.
-
-Followed by **DuSable High School spotlight card** (dark parallelogram, gold label "✦ Spotlight").
-
-**Tab 2: Chicago Connections**
-Same 2-column artist grid format.
-Artists: Louis Armstrong, Benny Goodman, Herbie Hancock, Nicole Mitchell.
-
-**Tab 3: The Scene Today**
-3-column dark grid cards (`.ww-scene-card`, background `#1A1A1A`).
-Top stripe color cycles: red / blue / gold per `nth-child(3n+1/2/3)`.
-Each card: name (Bebas), role (gold uppercase), description text, ▶ Link coming placeholder.
-
-Artists: Marquis Hill, Makaya McCraven, Isaiah Collier, Juan Pastor (percussionist/composer, Afro-Peruvian roots, founder of Juan Pastor's Chicano), Kyle & Christian Swan, Charles Rick Heath, Sharel Cassidy, Dee Alexander, Alyssa Allgood, Tammy McCann, Kurt Elling, Patricia Barber, Thaddeus Tukes, Michael Allemana, Fareed Haque.
-
-**Data architecture:** All artist content lives in `ORIGINALS`, `CONNECTIONS`, `TODAY` arrays. `listen: null` for all currently — replace with URL string when ready. Grid rendering is data-driven via `renderOriginals()`, `renderConnections()`, `renderToday()` functions.
+Data in `ORIGINALS`, `CONNECTIONS`, `TODAY` arrays. `listen: null` throughout — replace with URL when ready.
 
 ---
 
 ### Slide 3 — Where to Hear Jazz in Chicago
-**Status:** Complete
+Fixed header + yellow intro band + 3 tabs.
 
-Layout: fixed header + yellow intro band + 3 tabs + scrollable panel per tab.
+**Tab 1: Jazz Clubs** — Jazz Showcase (South Loop), Green Mill (Uptown), Andy's Jazz Club (Near North), Winter's Jazz Club (River North), Le Piano (Rogers Park)  
+**Tab 2: Other Venues** — Constellation (Irving Park), California Clipper (Humboldt Park), Symphony Center (Loop), Ravinia Festival (Highland Park)  
+**Tab 3: Festivals & Events** — Chicago Jazz Festival, Hyde Park Jazz Festival, Chicago Winter Jazz Fair, Jazz Institute of Chicago
 
-**Tab 1: Jazz Clubs** (2-column venue grid)
-Each card: colored top border, venue name (Bebas), neighborhood tag (colored pill), preview text, expandable bio, "↗ Visit" link placeholder.
-
-Venues: Jazz Showcase (South Loop, red), Green Mill (Uptown, blue), Andy's Jazz Club (Downtown, gold), Winter's Jazz Club (River North, red), Le Piano (Rogers Park, blue).
-
-**Tab 2: Other Venues** (2-column venue grid, same format)
-Venues: Constellation (Irving Park, blue), California Clipper (Humboldt Park, red), Symphony Center (Loop, gold), Ravinia Festival (Highland Park, near-black).
-
-**Tab 3: Festivals & Events** (single-column festival cards)
-Each card: colored left accent bar, name (Bebas), when label (colored), description text, "↗ Visit" link placeholder.
-
-Festivals: Chicago Jazz Festival (Labor Day, red), Hyde Park Jazz Festival (Late September, blue), Chicago Winter Jazz Fair (February, gold), Jazz Institute of Chicago (Year-Round, near-black).
-
-**Data architecture:** `CLUBS`, `VENUES`, `FESTIVALS` arrays. `url: null` for all — replace with string when ready. Rendered via `renderVenueGrid()` and `renderFestivals()`.
+Data in `CLUBS`, `VENUES`, `FESTIVALS` arrays. `url: null` throughout — replace with string when ready.
 
 ---
 
-## Slides Still To Build
+### Slide 4 — Test Your Jazz IQ
+Fixed header + scrollable stage with 3 screens (`#q-intro`, `#q-play`, `#q-results`). Navigating to the slide always resets to the intro screen.
 
-### Slide 4 — Test Your Jazz IQ (Optional Quiz)
-**Status:** Not started
+**Intro screen:** Explains the mechanic. "Take the quiz" → play; "Skip to Calendar →" → slide 5.
 
-**Mechanic:** "Which came first?" binary comparison quiz that builds a timeline as you go.
+**Play screen:**
+- 3 fixed anchors pre-placed: Great Migration (1910), AACM founded (1965), First Chicago Jazz Festival (1979)
+- Each round: sticky event card at top names the new event; the nearest already-placed neighbor is highlighted in the timeline with a "Compare" badge. A red "▲ Here — earlier" slot sits above it; a blue "▼ Here — later" slot sits below.
+- Clicking a slot records the answer, places the event in correct chronological order (gold flash), shows feedback, and auto-advances after 1.7s.
+- 8 rounds drawn randomly from the 18-event bank (anchors excluded from draw).
+- Tie rule: if new event year equals neighbor year, either answer accepted.
 
-**Starting state:**
-3 anchor events pre-placed on the timeline as fixed reference points:
-- The Great Migration begins (1910)
-- AACM founded (1965)
-- Chicago Jazz Festival launched (1979)
+**Results screen:** X/8 score, tiered blurb, chronological results list, "Play again" / "Continue →".
 
-**Each question:**
-1. A new event is presented to the learner
-2. The quiz identifies the nearest already-placed neighbor on the timeline
-3. Question is posed: "Does [new event] come BEFORE or AFTER [neighbor event]?"
-4. Learner clicks Before or After
-5. Correct/incorrect feedback shown briefly
-6. Event is placed correctly on the growing timeline regardless of answer
-7. Next question
-
-**Per round:** 8 events drawn randomly from the bank (excluding the 3 anchors).
-
-**Scoring:** Simple correct/incorrect per question. End screen shows score (X/8), which events they got right, and the correct years for all. Low-stakes framing — "Test your jazz IQ" not "pass/fail."
-
-**Opt-out:** Before the quiz starts, learner is shown a choice: "Take the quiz" or "Skip to Jazz Calendar." Both options advance to their respective slide.
-
-**Event bank (20+ events to draw from randomly):**
-Build this out — suggested events include:
-- Louis Armstrong arrives in Chicago (1922)
-- Sunset Cafe opens on The Stroll (1921)
-- Nat King Cole forms his trio in Chicago (1937)
-- Dinah Washington joins Lionel Hampton (1943)
-- Jazz Showcase founded by Joe Segal (1947)
-- Sun Ra arrives in Chicago (1946)
-- Sun Ra leaves Chicago for New York (1961)
-- Johnny Griffin records "The Little Giant" (1959)
-- Eddie Harris records "Exodus" (1961)
-- Jazz Institute of Chicago founded (1969)
-- AACM founded by Muhal Richard Abrams (1965)
-- Chicago Jazz Festival first year (1979)
-- Art Ensemble of Chicago forms (1969)
-- Hyde Park Jazz Festival first year (2009)
-- Green Mill opens (1907)
-- DuSable High School opens (1935)
-- Captain Walter Dyett begins at DuSable (1931)
-- Kurt Elling begins Green Mill residency (1991) *approximate — verify*
-- Patricia Barber begins Monday nights at Green Mill (1984) *approximate — verify*
-- Chicago Winter Jazz Fair first year (verify)
-- Makaya McCraven releases "In the Moment" (2015)
-- Jazz Showcase moves to South Loop (verify current location year)
-
-*Note: Verify exact dates for items marked — these are approximate from training data.*
-
-**Visual design:**
-- Cream background, consistent with other slides
-- Timeline rendered as a horizontal bar with placed events appearing as colored dots with labels
-- Question card appears above the timeline: event name, Before/After buttons (red and blue)
-- Correct: brief green flash, event placed. Incorrect: brief red flash, correct placement shown.
+**Event bank (18 events, years 1907–2015):** See `QUIZ_EVENTS` array. Dates for Patricia Barber's Green Mill start (1994) are approximate.
 
 ---
 
 ### Slide 5 — Plan Your Jazz Calendar
-**Status:** Not started
+Fixed header + two-column body (left: form + lineup; right: map). Both columns scroll independently.
 
-**Mechanic:** Personal event planner + venue map.
+**Left — form + lineup:**
+- Fields: date, time (`step="900"` → :00/:15/:30/:45), performer(s), venue dropdown (9 named venues + "Other / write in…")
+- "+ Add to Lineup" button (validates that performer, date, and venue are all present)
+- Events persist via `localStorage` (`jazz_calendar_events` key)
+- Each saved event: performer, venue, formatted date/time, **＋ Google** calendar link, **＋ Apple / .ics** download, × delete
+- Clicking an event selects its venue (highlights pin + shows popover)
 
-**Left panel — Event list + entry form:**
-- Form fields: Date (date picker), Time (time input), Performer(s) (text input), Venue (dropdown: all named venues + "Other / write in")
-- "Add to Calendar" button
-- Growing list of added events below the form
-- Click an event in the list → highlight the corresponding venue pin on the map
+**Right — SVG map:**
+- Hand-built Chicago: Lake Michigan (east), Chicago River (fork visible), 8 labeled neighborhood zones
+- 8 on-map pins + Ravinia (upper-left, ↑ arrow, dashed white ring indicating off-map non-contiguous)
+- Selecting a pin shows a **floating popover** anchored at the pin: name, neighborhood, address, ↗ Calendar link, 📍 Google Maps link. Popover flips left/right to stay on-map.
+- Count badge on pins when shows are booked; pin enlarges and turns gold when selected
 
-**Right panel — Chicago neighborhood map:**
-- SVG map of Chicago (styled in course palette — NOT Google Maps embed)
-- Venue pins for all named venues (Jazz Showcase, Green Mill, Andy's, Winter's, Le Piano, Constellation, California Clipper, Symphony Center/Orchestra Hall)
-- Ravinia gets a note that it's in Highland Park (off the main Chicago map)
-- Pin shows venue name on hover
-- Pins highlight (gold, enlarged) when corresponding event is selected in the list
-- Click a pin → highlight all events at that venue in the list
+**Data:** `MAP_VENUES` and `OFFMAP_VENUES` arrays, each with `{ id, name, hood, initials, color, x, y, address, url }`. All `url: null` — fill in. All `address` values are best-known approximations — **verify before publishing.**
 
-**Below the map — Venue Calendar Reference:**
-Collapsible panel listing all venues with "↗ Calendar" links (currently placeholders, to be filled in).
-
-**Visual design:**
-- Two-column layout (form+list left, map right)
-- SVG map styled in course palette: neighborhoods as subtle fills, lake as blue, venue pins as colored circles with Bebas initials
-- Map neighborhoods to include at minimum: Loop, South Loop, Near North, Uptown, Rogers Park, Hyde Park, Humboldt Park, Irving Park
+**Calendar export:** `googleCalUrl()` builds Google Calendar deep-link; `downloadIcs()` generates valid VCALENDAR `.ics` blob. Both default missing time to 8:00 PM and assume 2-hour duration (`CAL_DURATION_MS`).
 
 ---
 
-## File Structure (Target)
+## File Structure
 
 ```
 jazz-chicago/
-  index.html          ← single file, entire course
-  HANDOFF.md          ← this document
-  README.md           ← for GitHub
+  index.html           ← single file, entire course
+  HANDOFF.md           ← this document
+  STORYLINE_SHELL.md   ← reusable shell template for other projects
+  README.md            ← for GitHub
+  .claude/
+    launch.json        ← preview server (npx serve -l 4319 .)
+    memory/            ← Claude Code project memory
 ```
-
-No build process. No package.json. Pure HTML/CSS/JS. Deploy to Vercel as static site — zero config needed, just connect the repo.
 
 ---
 
-## Known Issues / Nice-to-Haves
+## Open Items (Content — Owner to Fill In)
 
-- **Avatar shapes:** SVG avatar shape fix (stroke + semi-transparent fill) was validated in a test widget but not yet applied to the full Who's Who slide. Apply the corrected `makeAvatar()` function from the shape test when rebuilding.
-- **Bottom bar play button:** Toggle between ▶ and ❚❚ is wired but needs testing in the real file.
-- **Listen / Visit links:** All `null` throughout. Owner to source and fill in.
-- **Photos:** All avatars are geometric placeholders. Real photos to be sourced (public domain / press photos) and dropped in as `<img>` replacements for the SVG avatars.
-- **Audio:** `HAS_MEDIA` array is all `false`. If voiceover or ambient audio is added later, flip the relevant index to `true` and wire up the audio element.
-- **Mobile:** Not yet optimized. Course is designed for desktop/laptop viewing consistent with Storyline conventions.
+| Item | Location | Action |
+|------|----------|--------|
+| Artist listen links | `ORIGINALS`, `CONNECTIONS`, `TODAY` arrays | Replace `listen: null` with URL string |
+| Venue calendar links | `CLUBS`, `VENUES`, `FESTIVALS`, `MAP_VENUES`, `OFFMAP_VENUES` | Replace `url: null` with URL string |
+| Venue addresses | `MAP_VENUES`, `OFFMAP_VENUES` | Verify street addresses before publishing |
+| Artist photos | All slides with SVG avatars | Replace `makeAvatar()` SVG with `<img>` elements |
+| Audio / voiceover | `HAS_MEDIA` array | Flip index to `true`; wire audio element |
 
 ---
 
@@ -301,13 +191,17 @@ No build process. No package.json. Pure HTML/CSS/JS. Deploy to Vercel as static 
 
 - No dark/noir aesthetic — warm, colorful poster-art palette
 - No Storyline `.story` file — pure HTML/JS equivalent
-- Sequential unlock navigation (not free navigation) — matches Storyline default
+- Sequential unlock navigation (not free navigation) — completed slides revisitable via sidebar
 - Media controls hidden when no media — intentional UX improvement over Storyline
-- Timeline quiz uses "which came first?" binary comparison, NOT drag-and-drop
-- Jazz Calendar uses SVG map, NOT Google Maps embed
-- All data (artists, venues, events) in JS arrays at top of script for easy editing
+- Timeline quiz uses "which slot?" placement flanking the comparison event, NOT drag-and-drop
+- Jazz Calendar uses hand-built SVG map, NOT Google Maps embed
+- Ravinia is a map pin with dashed off-map ring, not a separate chip
+- All data in JS arrays at top of script for easy editing
 - Fonts loaded from Google Fonts CDN (Bebas Neue + Inter)
+- Calendar export: Google link + universal `.ics` (no separate Outlook web link)
+- Show duration defaults: 8 PM start, 2-hour run when user omits time
+- Mobile not optimized — desktop/laptop viewing, consistent with Storyline conventions
 
 ---
 
-*Handoff prepared: June 2026. Built collaboratively in Claude.ai chat before moving to Claude Code for completion.*
+*Handoff updated: June 2026. Slides 0–3 built in Claude.ai chat; slides 4–5, responsive shell, quiz redesign, and calendar/map built in Claude Code.*
