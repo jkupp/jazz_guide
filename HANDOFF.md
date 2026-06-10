@@ -179,7 +179,7 @@ jazz-chicago/
 
 | Item | Location | Action |
 |------|----------|--------|
-| Artist listen links | `ORIGINALS`, `CONNECTIONS`, `TODAY` arrays | Replace `listen: null` with URL string |
+| Artist listen links | `ORIGINALS`, `CONNECTIONS`, `TODAY` arrays | Replace `listen: null` with a Spotify track URL (`https://open.spotify.com/track/TRACK_ID`) — an inline Spotify embed player will appear automatically |
 | Venue calendar links | `CLUBS`, `VENUES`, `FESTIVALS`, `MAP_VENUES`, `OFFMAP_VENUES` | Replace `url: null` with URL string |
 | Venue addresses | `MAP_VENUES`, `OFFMAP_VENUES` | Verify street addresses before publishing |
 | Artist photos | All slides with SVG avatars | Replace `makeAvatar()` SVG with `<img>` elements |

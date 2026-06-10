@@ -135,8 +135,12 @@
     .artist-card-body { padding: 0 11px; font-size: 11px; color: #3A3530; line-height: 1.6; max-height: 0; overflow: hidden; transition: max-height 0.3s ease, padding 0.3s; }
     .artist-card-body.expanded { max-height: 200px; padding: 8px 11px 0; }
     .artist-card-footer { display: flex; align-items: center; justify-content: space-between; padding: 7px 11px; border-top: 1px solid #f0ebe3; margin-top: 4px; }
-    .artist-listen { font-size: 10px; font-weight: 700; color: #E8403A; text-transform: uppercase; letter-spacing: 0.08em; text-decoration: none; cursor: pointer; }
+    .artist-listen { font-size: 10px; font-weight: 700; color: #E8403A; text-transform: uppercase; letter-spacing: 0.08em; text-decoration: none; cursor: pointer; background: none; border: none; padding: 0; font-family: inherit; }
     .artist-listen.placeholder { color: #ccc; cursor: default; }
+    .artist-listen.open { color: #2B5BA8; }
+    .artist-player { max-height: 0; overflow: hidden; transition: max-height 0.35s ease; }
+    .artist-player.open { max-height: 90px; }
+    .artist-player iframe { width: 100%; height: 80px; border: none; display: block; }
     .artist-toggle { font-size: 10px; font-weight: 600; color: #2B5BA8; text-transform: uppercase; letter-spacing: 0.08em; cursor: pointer; }
     .ww-spotlight { background: #1A1A1A; padding: 14px 16px; margin-bottom: 14px; transform: skewX(-2deg); }
     .ww-spotlight-inner { transform: skewX(2deg); }
@@ -152,8 +156,12 @@
     .scene-name { font-family: 'Bebas Neue', sans-serif; font-size: 15px; color: #F5F0E8; line-height: 1.1; margin-bottom: 3px; }
     .scene-role { font-size: 9px; font-weight: 600; color: #F2B02E; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 5px; }
     .scene-text { font-size: 10.5px; color: #aaa; line-height: 1.5; margin-bottom: 7px; }
-    .scene-listen { font-size: 10px; font-weight: 700; color: #E8403A; text-transform: uppercase; letter-spacing: 0.08em; text-decoration: none; }
+    .scene-listen { font-size: 10px; font-weight: 700; color: #E8403A; text-transform: uppercase; letter-spacing: 0.08em; text-decoration: none; cursor: pointer; background: none; border: none; padding: 0; font-family: inherit; }
     .scene-listen.placeholder { color: #444; cursor: default; }
+    .scene-listen.open { color: #F2B02E; }
+    .scene-player { max-height: 0; overflow: hidden; transition: max-height 0.35s ease; margin-top: 6px; }
+    .scene-player.open { max-height: 90px; }
+    .scene-player iframe { width: 100%; height: 80px; border: none; display: block; }
 
     /* ── WHERE TO HEAR CARDS ───────────────────────────────────────── */
     .venue-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
@@ -640,67 +648,67 @@
   const ORIGINALS = [
     { name:'Lovie Austin', dates:'1887–1972', initials:'LA', color:'#E8403A', image:'images/Lovie_Austin.jpg',
       preview:'One of the most important and least-celebrated figures in early jazz.',
-      bio:'Austin led the house band at the Monogram Theatre on the South Side for over 20 years, accompanying Ma Rainey and Bessie Smith. She composed prolifically, led sessions, and mentored younger musicians — in an era when Black women in jazz were rarely credited, let alone celebrated.', listen:null },
+      bio:'Austin led the house band at the Monogram Theatre on the South Side for over 20 years, accompanying Ma Rainey and Bessie Smith. She composed prolifically, led sessions, and mentored younger musicians — in an era when Black women in jazz were rarely credited, let alone celebrated.', listen:'https://open.spotify.com/track/0p8MgQcg6Lg4aZct7P1a1t?si=81873b02bd7844b9' },
     { name:'Lil Hardin Armstrong', dates:'1898–1971', initials:'LH', color:'#2B5BA8', image:'images/Lil_Hardin_Armstrong.jpg',
       preview:'A brilliant pianist and bandleader — the driving force behind Louis Armstrong\'s early rise.',
-      bio:'Considered one of the greats of her era, she encouraged Armstrong to leave King Oliver\'s band and lead his own. After their marriage dissolved, she rebuilt her career and continued performing for decades. A woman who gave more than history has acknowledged.', listen:null },
+      bio:'Considered one of the greats of her era, she encouraged Armstrong to leave King Oliver\'s band and lead his own. After their marriage dissolved, she rebuilt her career and continued performing for decades. A woman who gave more than history has acknowledged.', listen:"https://open.spotify.com/track/339ykHNu2APhJhOkFDvCgB?si=7ba699515fe14bd1" },
     { name:'Nat King Cole', dates:'1919–1965', initials:'NC', color:'#F2B02E', image:'images/Nat_King_Cole_1958.jpeg',
       preview:'Born in Alabama, raised on the South Side — Chicago gave him his foundation.',
-      bio:'Cole came up in Chicago\'s jazz clubs in the 1930s before his trio recordings and singular vocal style made him one of the most beloved artists in American music.', listen:null },
+      bio:'Cole came up in Chicago\'s jazz clubs in the 1930s before his trio recordings and singular vocal style made him one of the most beloved artists in American music.', listen:'https://open.spotify.com/track/648TTtYB0bH0P8Hfy0FmkL?si=811bbb06db0d46f0' },
     { name:'Dinah Washington', dates:'1924–1963', initials:'DW', color:'#E8403A', image:'images/Dinah_Washington_1962.jpg',
       preview:'"The Queen" — one of the most versatile voices in jazz and R&B.',
-      bio:'Born in Alabama, raised in Chicago. Washington sang in church on the South Side before Lionel Hampton hired her in 1943. Equally at home in blues, ballads, and bebop.', listen:null },
+      bio:'Born in Alabama, raised in Chicago. Washington sang in church on the South Side before Lionel Hampton hired her in 1943. Equally at home in blues, ballads, and bebop.', listen:'https://open.spotify.com/track/1DNTS1MQ1tyXP7ookk5UsJ?si=38e5a7d94bff4930' },
     { name:'Von Freeman', dates:'1922–2012', initials:'VF', color:'#2B5BA8', image:'images/Von_Freeman.jpg',
       preview:'The patriarch of Chicago\'s first family of jazz — seven decades on the bandstand.',
-      bio:'Freeman spent virtually his entire career in Chicago, playing his searching tenor saxophone in clubs large and small. His son Chico Freeman carries the legacy forward as a world-class saxophonist.', listen:null },
+      bio:'Freeman spent virtually his entire career in Chicago, playing his searching tenor saxophone in clubs large and small. His son Chico Freeman carries the legacy forward as a world-class saxophonist.', listen:'https://open.spotify.com/track/1M9B328OQBOFENEzpfnfOe?si=09696c81fdd2437a' },
     { name:'Johnny Griffin', dates:'1928–2008', initials:'JG', color:'#F2B02E', image:'images/Johnny_Griffin_2007.jpg',
       preview:'"The Little Giant" — one of the fastest tenor saxophonists in hard bop.',
-      bio:'Griffin studied at DuSable High School before cutting his teeth at the Beehive Lounge and launching an international career. Small in stature, enormous in sound.', listen:null },
+      bio:'Griffin studied at DuSable High School before cutting his teeth at the Beehive Lounge and launching an international career. Small in stature, enormous in sound.', listen:'https://open.spotify.com/track/3E7QzgM8Je4hyf0kK8tGmD?si=db2e11322e6d4e88' },
     { name:'Clifford Jordan', dates:'1931–1993', initials:'CJ', color:'#E8403A', image:'images/Clifford_Jordan.jpg',
       preview:'South Side native — a hard bop tenor of deep harmonic sophistication.',
-      bio:'A DuSable High School alumnus whose career took him from Chicago\'s clubs to the stages of the world. His rich, burnished tone was instantly recognizable.', listen:null },
+      bio:'A DuSable High School alumnus whose career took him from Chicago\'s clubs to the stages of the world. His rich, burnished tone was instantly recognizable.', listen:'https://open.spotify.com/track/2wUYrG3gtaHZXvr6ekK1NP?si=9d0a8125af72486a' },
     { name:'Eddie Harris', dates:'1934–1996', initials:'EH', color:'#2B5BA8', image:'images/Eddie_Harris.jpg',
       preview:'Bridged hard bop, soul jazz, and R&B — and pioneered the electric saxophone.',
-      bio:'His 1961 recording of "Exodus" was one of the first jazz singles to go gold. Harris remained restlessly experimental throughout his career, always finding new sounds.', listen:null },
+      bio:'His 1961 recording of "Exodus" was one of the first jazz singles to go gold. Harris remained restlessly experimental throughout his career, always finding new sounds.', listen:'https://open.spotify.com/track/2wAf56DOdetfnfhkeFqRzd?si=45550598e49d4508' },
     { name:'Muhal Richard Abrams', dates:'1930–2017', initials:'MR', color:'#F2B02E', image:'images/Muhal_Richard_Abrams.jpg',
       preview:'Founding visionary of the AACM — he didn\'t just make music, he built an institution.',
-      bio:'Pianist, composer, and the creative force behind the AACM, which transformed Chicago\'s avant-garde scene into a global force.', listen:null },
+      bio:'Pianist, composer, and the creative force behind the AACM, which transformed Chicago\'s avant-garde scene into a global force.', listen:'https://open.spotify.com/track/5MpDljoGKNkDKQXpHILBQC?si=85008e4c9ff24239' },
     { name:'Sun Ra', dates:'1914–1993', initials:'SR', color:'#E8403A', image:'images/Sun_Ra_1973.jpg',
       preview:'Chicago was the laboratory for one of jazz\'s most singular visions.',
-      bio:'Spent the crucial 1940s–50s developing his Arkestra and cosmic philosophy on the South Side before moving to New York. His Chicago years were the seedbed for a lifetime of visionary music.', listen:null },
+      bio:'Spent the crucial 1940s–50s developing his Arkestra and cosmic philosophy on the South Side before moving to New York. His Chicago years were the seedbed for a lifetime of visionary music.', listen:'https://open.spotify.com/track/1jKVBC4lBoRCCBIS2oya00?si=9a71b586d1c84303' },
   ];
 
   const CONNECTIONS = [
     { name:'Louis Armstrong', dates:'1901–1971', initials:'LA', color:'#E8403A', image:'images/Louis_Armstrong.jpg',
       preview:'Arrived from New Orleans in 1922 and transformed Chicago\'s scene immediately.',
-      bio:'His Hot Five and Hot Seven recordings, made in Chicago, are among the most important documents in jazz history. Chicago gave him the stage to become the most influential jazz musician of all time.', listen:null },
+      bio:'His Hot Five and Hot Seven recordings, made in Chicago, are among the most important documents in jazz history. Chicago gave him the stage to become the most influential jazz musician of all time.', listen:'https://open.spotify.com/track/4fJyeMpt1QeqEwVFo4RZYR?si=8b14a4ce7abd42ed' },
     { name:'Benny Goodman', dates:'1909–1986', initials:'BG', color:'#2B5BA8', image:'images/Benny_Goodman_1942.jpg',
       preview:'Born and raised in Chicago — the "King of Swing" started here.',
-      bio:'Goodman got his start in Chicago\'s dance bands before leading the orchestra that launched the Swing Era nationally in 1935.', listen:null },
+      bio:'Goodman got his start in Chicago\'s dance bands before leading the orchestra that launched the Swing Era nationally in 1935.', listen:'https://open.spotify.com/track/2BBD04jL8wOWW1e0jS52go?si=487a851875d24541' },
     { name:'Herbie Hancock', dates:'b. 1940', initials:'HH', color:'#F2B02E', image:'images/HERBIE_HANCOCK_1999.jpg',
       preview:'Born in Chicago — the city\'s musical rigor is in his DNA.',
-      bio:'Studied piano in Chicago and began his professional career before moving to New York to join Miles Davis\'s historic quintet. One of jazz\'s most endlessly creative voices.', listen:null },
+      bio:'Studied piano in Chicago and began his professional career before moving to New York to join Miles Davis\'s historic quintet. One of jazz\'s most endlessly creative voices.', listen:'https://open.spotify.com/track/0sCeNwt8xRCMR4NhKpMyBe?si=46c79cd17d6444c6' },
     { name:'Nicole Mitchell', dates:'b. 1971', initials:'NM', color:'#1A1A1A', image:'images/Nicole_Mitchell.jpg',
       preview:'AACM member whose work bridges jazz, classical, and Afrofuturism.',
-      bio:'Flutist and composer whose artistic roots are deeply embedded in the AACM tradition. Though based primarily outside Chicago in recent years, her Chicago formation defines her musical identity.', listen:null },
+      bio:'Flutist and composer whose artistic roots are deeply embedded in the AACM tradition. Though based primarily outside Chicago in recent years, her Chicago formation defines her musical identity.', listen:"https://open.spotify.com/track/4uL7Qs54H3J0PAhbXwDAjX?si=477be95e35304873" },
   ];
 
   const TODAY = [
-    { name:'Marquis Hill', role:'Trumpet / Composer', text:'One of Chicago\'s most prominent jazz ambassadors — accessible, sophisticated, deeply rooted.', listen:null },
-    { name:'Makaya McCraven', role:'Drums / Producer', text:'"Organic beat music" — live jazz improvisation meets hip-hop production. A global audience, rooted in Chicago.', listen:null },
-    { name:'Isaiah Collier', role:'Tenor Saxophone', text:'Already drawing Coltrane comparisons, leading one of the most exciting groups in Chicago jazz right now.', listen:null },
-    { name:'Juan Pastor', role:'Percussion / Composer', text:'Afro-Peruvian roots. Founder of Juan Pastor\'s Chicano, and a wide-ranging collaborator at the heart of Chicago\'s multicultural jazz scene.', listen:null },
+    { name:'Marquis Hill', role:'Trumpet / Composer', text:'One of Chicago\'s most prominent jazz ambassadors — accessible, sophisticated, deeply rooted.', listen:'https://open.spotify.com/track/5n6d5r9OLIaV7v7iBsntDZ?si=071dac1e9cda4245' },
+    { name:'Makaya McCraven', role:'Drums / Producer', text:'"Organic beat music" — live jazz improvisation meets hip-hop production. A global audience, rooted in Chicago.', listen:'https://open.spotify.com/track/3uR5jkGpSFancfPZt4Xh2s?si=671417b533ee4795' },
+    { name:'Isaiah Collier', role:'Tenor Saxophone', text:'Already drawing Coltrane comparisons, leading one of the most exciting groups in Chicago jazz right now.', listen:'https://open.spotify.com/track/734XKqrjAPZmS9lfeu44l3?si=d32325c572db4932' },
+    { name:'Juan Pastor', role:'Percussion / Composer', text:'Afro-Peruvian roots. Founder of Juan Pastor\'s Chicano, and a wide-ranging collaborator at the heart of Chicago\'s multicultural jazz scene.', listen:'https://open.spotify.com/track/4eL4ZfRnxDnMItlF0TWCba?si=a86d363bf7e34f50' },
     { name:'Kyle & Christian Swan', role:'Multi-instrumentalists', text:'Twin brothers bringing joyful, swinging energy to Chicago\'s club scene.', listen:null },
     { name:'Charles Rick Heath', role:'Drums / Bandleader', text:'Deep groove and genuine commitment to nurturing Chicago\'s jazz community.', listen:null },
-    { name:'Sharel Cassidy', role:'Alto Saxophone', text:'Powerful, singing tone — equally at home in straight-ahead and adventurous contexts.', listen:null },
-    { name:'Dee Alexander', role:'Vocals', text:'Extraordinary range and depth across jazz, blues, and gospel. A Chicago institution.', listen:null },
-    { name:'Alyssa Allgood', role:'Vocals', text:'Warm, assured sound and a growing national profile. One to watch.', listen:null },
-    { name:'Tammy McCann', role:'Vocals', text:'Interpretive depth and an uncanny ability to inhabit a lyric completely.', listen:null },
-    { name:'Kurt Elling', role:'Vocals', text:'One of the most celebrated jazz vocalists of his generation. Forever connected to the Green Mill.', listen:null },
-    { name:'Patricia Barber', role:'Piano / Vocals', text:'Monday nights at the Green Mill. Brainy, sardonic, completely original.', listen:null },
-    { name:'Thaddeus Tukes', role:'Tenor Saxophone', text:'Warm, soulful voice bringing depth to Chicago\'s current scene.', listen:null },
+    { name:'Sharel Cassity', role:'Alto Saxophone', text:'Powerful, singing tone — equally at home in straight-ahead and adventurous contexts.', listen:'https://open.spotify.com/track/2IvSnGCGDnJptme1ubGUD8?si=1648ae47d49042c3' },
+    { name:'Dee Alexander', role:'Vocals', text:'Extraordinary range and depth across jazz, blues, and gospel. A Chicago institution.', listen:'https://open.spotify.com/track/3nTJAMYSDMXEgJdDyKYHzj?si=eb969f86e2944093' },
+    { name:'Alyssa Allgood', role:'Vocals', text:'Warm, assured sound and a growing national profile. One to watch.', listen:'https://open.spotify.com/track/7LFAEpBEUrBylFK1enON0q?si=7f2a7fd69e5e49d8' },
+    { name:'Tammy McCann', role:'Vocals', text:'Interpretive depth and an uncanny ability to inhabit a lyric completely.', listen:'https://open.spotify.com/track/5jeeLEN3rNQGY4k4H3FVB2?si=52ac325190814aee' },
+    { name:'Kurt Elling', role:'Vocals', text:'One of the most celebrated jazz vocalists of his generation. Forever connected to the Green Mill.', listen:'https://open.spotify.com/track/7CfgDvbmdnDSWMO4ZzzHzS?si=93adfd82cf3f427c' },
+    { name:'Patricia Barber', role:'Piano / Vocals', text:'Monday nights at the Green Mill. Brainy, sardonic, completely original.', listen:'https://open.spotify.com/track/2uHFHxxvArocjAE7gkauxb?si=7a2377c43dc045f1' },
+    { name:'Thaddeus Tukes', role:'Vibraphone / Piano', text:'Bringing poetry to the vibraphone, with a Chicago Vibe.', listen:'https://open.spotify.com/track/0wkRsGVcGx1UD74Ap9MLyO?si=6da0cb5934db449d' },
     { name:'Michael Allemana', role:'Guitar', text:'Deep bebop roots, lyrical approach. A cornerstone of Chicago\'s working jazz community.', listen:null },
-    { name:'Fareed Haque', role:'Guitar / Composer', text:'Jazz, classical, world music — a genuinely singular voice. Professor at Northern Illinois University.', listen:null },
+    { name:'Fareed Haque', role:'Guitar / Composer', text:'Jazz, classical, world music — a genuinely singular voice. Professor at Northern Illinois University.', listen:"https://open.spotify.com/track/57OgGYoW7zF8srg5xTOJeY?si=bda3ee459e9c4bfe" },
   ];
 
   // ── VENUE DATA ─────────────────────────────────────────────────────
@@ -805,6 +813,36 @@
   }
 
   // ── RENDER ─────────────────────────────────────────────────────────
+  function spotifyEmbed(url) {
+    // Accept full track URL or embed URL; return embed URL
+    // e.g. https://open.spotify.com/track/ABC → https://open.spotify.com/embed/track/ABC
+    if (!url) return null;
+    const m = url.match(/spotify\.com\/(embed\/)?track\/([A-Za-z0-9]+)/);
+    if (!m) return null;
+    return `https://open.spotify.com/embed/track/${m[2]}?utm_source=generator&theme=0`;
+  }
+
+  function togglePlayer(btnEl, playerId) {
+    const panel = document.getElementById(playerId);
+    if (!panel) return;
+    const isOpen = panel.classList.contains('open');
+    if (isOpen) {
+      panel.classList.remove('open');
+      btnEl.classList.remove('open');
+      btnEl.textContent = '▶ Listen';
+    } else {
+      // Lazy-load iframe on first open
+      if (!panel.dataset.loaded) {
+        const src = panel.dataset.src;
+        panel.innerHTML = `<iframe src="${src}" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>`;
+        panel.dataset.loaded = '1';
+      }
+      panel.classList.add('open');
+      btnEl.classList.add('open');
+      btnEl.textContent = '■ Close';
+    }
+  }
+
   function renderArtistGrid(containerId, data) {
     document.getElementById(containerId).innerHTML = data.map((a,i) => `
       <div class="artist-card">
@@ -820,20 +858,31 @@
         </div>
         <div class="artist-card-body" id="ab-${containerId}-${i}">${a.bio}</div>
         <div class="artist-card-footer">
-          ${a.listen ? `<a class="artist-listen" href="${a.listen}" target="_blank">▶ Listen</a>` : `<span class="artist-listen placeholder">▶ Listen</span>`}
+          ${(()=>{ const em=spotifyEmbed(a.listen); return em
+            ? `<button class="artist-listen" id="al-${containerId}-${i}" onclick="togglePlayer(this,'ap-${containerId}-${i}')">▶ Listen</button>`
+            : `<span class="artist-listen placeholder">▶ Listen</span>`; })()}
           <span class="artist-toggle" onclick="toggleExpand('ab-${containerId}-${i}',this,event)">Read more ↓</span>
         </div>
+        ${(()=>{ const em=spotifyEmbed(a.listen); return em
+          ? `<div class="artist-player" id="ap-${containerId}-${i}" data-src="${em}"></div>`
+          : ''; })()}
       </div>`).join('');
   }
 
   function renderToday() {
-    document.getElementById('today-grid').innerHTML = TODAY.map(a => `
+    document.getElementById('today-grid').innerHTML = TODAY.map((a,i) => {
+      const em = spotifyEmbed(a.listen);
+      return `
       <div class="scene-card">
         <div class="scene-name">${a.name}</div>
         <div class="scene-role">${a.role}</div>
         <div class="scene-text">${a.text}</div>
-        ${a.listen ? `<a class="scene-listen" href="${a.listen}" target="_blank">▶ Listen</a>` : `<span class="scene-listen placeholder">▶ Link coming</span>`}
-      </div>`).join('');
+        ${em
+          ? `<button class="scene-listen" id="sl-today-${i}" onclick="togglePlayer(this,'sp-today-${i}')">▶ Listen</button>
+             <div class="scene-player" id="sp-today-${i}" data-src="${em}"></div>`
+          : `<span class="scene-listen placeholder">▶ Link coming</span>`}
+      </div>`;
+    }).join('');
   }
 
   function renderVenueGrid(containerId, data) {
