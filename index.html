@@ -112,8 +112,8 @@
     /* ── SLIDES 2 & 3: TABBED LAYOUT ───────────────────────────────── */
     .slide-tabbed { background: #F5F0E8; flex: 1; display: flex; flex-direction: column; overflow: hidden; }
     .tab-bar { display: flex; background: #2a2a2a; flex-shrink: 0; border-bottom: 2px solid #383838; }
-    .tab-btn { font-family: 'Bebas Neue', sans-serif; font-size: 13px; letter-spacing: 0.08em; color: #888; padding: 10px 16px; cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -2px; transition: color 0.15s; white-space: nowrap; background: none; border-top: none; border-left: none; border-right: none; }
-    .tab-btn:hover { color: #ccc; }
+    .tab-btn { font-family: 'Bebas Neue', sans-serif; font-size: 13px; letter-spacing: 0.08em; color: #aaa; padding: 10px 16px; cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -2px; transition: color 0.15s; white-space: nowrap; background: none; border-top: none; border-left: none; border-right: none; }
+    .tab-btn:hover { color: #e0e0e0; }
     .tab-btn.active { color: #F5F0E8; border-bottom-color: #E8403A; }
     .tab-scroll { flex: 1; overflow-y: auto; padding: 16px 18px; }
     .tab-scroll::-webkit-scrollbar { width: 4px; }
@@ -155,7 +155,7 @@
     .scene-card:nth-child(3n)::before { background: #F2B02E; }
     .scene-name { font-family: 'Bebas Neue', sans-serif; font-size: 15px; color: #F5F0E8; line-height: 1.1; margin-bottom: 3px; }
     .scene-role { font-size: 9px; font-weight: 600; color: #F2B02E; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 5px; }
-    .scene-text { font-size: 10.5px; color: #aaa; line-height: 1.5; margin-bottom: 7px; }
+    .scene-text { font-size: 10.5px; color: #ccc; line-height: 1.5; margin-bottom: 7px; }
     .scene-listen { font-size: 10px; font-weight: 700; color: #E8403A; text-transform: uppercase; letter-spacing: 0.08em; text-decoration: none; cursor: pointer; background: none; border: none; padding: 0; font-family: inherit; }
     .scene-listen.placeholder { color: #444; cursor: default; }
     .scene-listen.open { color: #F2B02E; }
@@ -415,7 +415,7 @@
             <span class="slide-header-title">Chicago's Jazz Story</span>
             <span class="slide-header-sub">Tap any era to expand</span>
           </div>
-          <div class="intro-band">Chicago didn't just play jazz — it transformed it. From the clubs of the South Side to the avant-garde experiments of the AACM, the city has been reshaping the music for over a century.</div>
+          <div class="intro-band">Chicago musicians didn't just play jazz — they transformed it. From the clubs of the South Side to the avant-garde experiments of the AACM, the city has been reshaping the music for over a century.</div>
           <div class="tl-scroll">
             <div class="tl-spine-wrap">
               <div class="tl-spine"></div>
@@ -617,12 +617,9 @@
   <!-- BOTTOM BAR -->
   <div class="sl-bottombar">
     <div class="bar-media hidden" id="mediaControls">
-      <button class="bar-btn round" aria-label="Play">&#9654;</button>
+      <button class="bar-btn round" id="narPlayBtn" aria-label="Play" onclick="toggleNarration()">&#9654;</button>
       <div class="bar-progress"><div class="bar-progress-fill" id="mediaProg"></div></div>
-      <button class="bar-btn" style="width:32px;height:32px;padding:0;" aria-label="Rewind">↺</button>
-      <button class="bar-btn" style="width:32px;height:32px;padding:0;" aria-label="Volume">♪</button>
-      <button class="bar-btn" style="width:32px;height:32px;padding:0;font-size:10px;" aria-label="CC">CC</button>
-      <button class="bar-btn" style="width:32px;height:32px;padding:0;" aria-label="Settings">⚙</button>
+      <button class="bar-btn" style="width:32px;height:32px;padding:0;font-size:20px;line-height:1;" aria-label="Rewind" onclick="rewindNarration()">↺</button>
       <div class="bar-divider"></div>
     </div>
     <div class="bar-nav">
@@ -633,12 +630,32 @@
     </div>
   </div>
 
+<audio id="slideAudio" preload="none"></audio>
+
 </div><!-- end .sl-outer -->
 
 <script>
   // ── CONSTANTS ──────────────────────────────────────────────────────
   const TOTAL = 6;
-  const HAS_MEDIA = [false, false, false, false, false, false];
+  const HAS_MEDIA = [true, true, true, true, true, true];
+
+  // ── NARRATION SCRIPTS (reference for recording audio/slide-N.mp3) ──
+  // These are the suggested scripts for each slide's narration clip.
+  // Record each as audio/slide-0.mp3 … audio/slide-5.mp3 (MP3, ~128 kbps).
+  const NARRATION = [
+    // Slide 0 — Welcome
+    "Welcome to A Jazz Lover's Guide to Chicago. This city has one of the richest jazz traditions in the world — not just as a stop on the road, but as a birthplace and incubator of some of the music's most important innovations. Whether you're visiting for the first time or you've lived here your whole life, this guide will take you inside the sounds, the history, and the places that make Chicago jazz like nowhere else.",
+    // Slide 1 — Chicago's Jazz Story
+    "The story of jazz in Chicago begins with the Great Migration — hundreds of thousands of Black Americans who moved north from the Deep South in the early twentieth century, bringing the blues and early jazz with them. On the South Side, a golden age of clubs and ballrooms flourished. Over the decades that followed, Chicago became home to bebop, hard bop, the avant-garde experiments of the AACM, and a living tradition that continues today.",
+    // Slide 2 — Who's Who
+    "Chicago's jazz story is inseparable from the artists who lived it. Learn about and listen to some of the greatest chicago originals, along with musicians with deep chicago connections, and artists on the chicago jazz scene today. From Lovie Austin and Lil Hardin Armstrong in the South Side's golden age, to Muhal Richard Abrams and the founding of the AACM, to the visionary cosmic jazz of Sun Ra — Chicago has nurtured some of the most original voices in the music. Tap any card to read more, and use the Listen button to hear them for yourself.",
+    // Slide 3 — Where to Hear
+    "Chicago has an extraordinary range of live jazz venues — from the legendary Green Mill in Uptown, which has been swinging since the nineteen-twenties, to intimate listening rooms in Rogers Park and adventurous stages in Irving Park. Whether you're looking for a late-night jam, a festival afternoon in Grant Park, or a serious listening experience, Chicago's jazz scene is alive across the city. This guide will point you in the right direction.",
+    // Slide 4 — Test Your Jazz IQ
+    "Think you know your Chicago jazz history? Let's find out. You'll be placing key events onto a growing timeline — some famous, some you might not have heard of. Three anchor points are already in place to get you started. Each round, the timeline gets a little more crowded. Good luck.",
+    // Slide 5 — Plan Your Jazz Calendar
+    "Now it's time to plan your own Chicago jazz experience. Use the map to explore venues across the city — from the South Loop to Rogers Park and beyond — and add shows to your personal lineup. When you're ready, export your picks straight to Google Calendar or Apple Calendar. The music is out there. All you have to do is show up."
+  ];
 
   // ── STATE ──────────────────────────────────────────────────────────
   let current = 0;
@@ -1330,6 +1347,59 @@
     document.getElementById('sidebar').classList.toggle('collapsed', !sidebarOpen);
   }
 
+  // ── AUDIO NARRATION ───────────────────────────────────────────────
+  // Place recorded MP3s in audio/ as slide-0.mp3 … slide-5.mp3.
+  // If a file is missing the player simply stays silent (no error thrown).
+  const _audio = document.getElementById('slideAudio');
+
+  _audio.addEventListener('play',        () => updatePlayBtn());
+  _audio.addEventListener('pause',       () => updatePlayBtn());
+  _audio.addEventListener('ended',       () => { updatePlayBtn(); setProgress(100); });
+  _audio.addEventListener('timeupdate',  () => {
+    if (_audio.duration) setProgress((_audio.currentTime / _audio.duration) * 100);
+  });
+
+  function narrate(slideIdx) {
+    _audio.pause();
+    setProgress(0);
+    _audio.src = `audio/slide-${slideIdx}.mp3`;
+    _audio.currentTime = 0;
+    _audio.play().catch(() => {}); // silently ignore autoplay policy block
+  }
+
+  function stopNarration() {
+    _audio.pause();
+    _audio.src = '';
+    setProgress(0);
+    updatePlayBtn();
+  }
+
+  function toggleNarration() {
+    if (_audio.paused) {
+      if (!_audio.src || _audio.src === window.location.href) {
+        _audio.src = `audio/slide-${current}.mp3`;
+      }
+      _audio.play().catch(() => {});
+    } else {
+      _audio.pause();
+    }
+  }
+
+  function rewindNarration() {
+    _audio.currentTime = 0;
+    _audio.play().catch(() => {});
+  }
+
+  function updatePlayBtn() {
+    const btn = document.getElementById('narPlayBtn');
+    if (btn) btn.innerHTML = _audio.paused ? '&#9654;' : '&#9646;&#9646;';
+  }
+
+  function setProgress(pct) {
+    const fill = document.getElementById('mediaProg');
+    if (fill) fill.style.width = pct + '%';
+  }
+
   function goToSlide(n) {
     if (n < 0 || n >= TOTAL) return;
     const target = document.getElementById('menu-' + n);
@@ -1337,6 +1407,7 @@
     // learner can always step forward one slide (which unlocks it on arrival).
     if (target && target.classList.contains('locked') && n !== current + 1) return;
 
+    stopNarration();
     document.getElementById('slide-' + current).classList.remove('active');
     const prevMenu = document.getElementById('menu-' + current);
     if (prevMenu) { prevMenu.classList.add('completed'); prevMenu.classList.remove('active'); }
@@ -1365,6 +1436,7 @@
       }
     }
     updateUI();
+    narrate(current);
   }
 
   function prevSlide() { goToSlide(current - 1); }
